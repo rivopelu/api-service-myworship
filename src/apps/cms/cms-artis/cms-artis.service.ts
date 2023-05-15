@@ -25,6 +25,7 @@ import { IListArtistResponse } from '@dto/request/response/artist-response/IList
 import { IDetailArtistResponse } from '@dto/request/response/artist-response/IDetailArtistResponse';
 import { ArtistStatusEnum } from '@enum/artist-status-enum';
 import { UserRoleEnum } from '@enum/user-role-enum';
+import { INeedRevisionRequestDto } from '@dto/request/artis-request/INeedRevisionRequestDto';
 
 @Injectable()
 export class CmsArtisService extends BaseService {
@@ -258,6 +259,64 @@ export class CmsArtisService extends BaseService {
       if (publishArtist) {
         return this.baseResponse.BaseResponseWithMessage('Artist Approved');
       }
+    }
+  }
+
+  async needRevisionArtist(slug: string, data: INeedRevisionRequestDto) {
+    const findData = await this.artistRepository.findOneBy({
+      slug: slug,
+      status: ArtistStatusEnum.PENDING,
+    });
+    if (!findData) {
+      throw new NotFoundException('artist tidak di temukan');
+    } else {
+      const updatedData = await this.artistRepository.update(
+        { slug },
+        { status: ArtistStatusEnum.NEED_REVISION, notesRevision: data.notes },
+      );
+      if (updatedData) {
+        return this.baseResponse.BaseResponseWithMessage(
+          'Revision Need Success',
+        );
+      }
+    }
+  }
+
+  async getListArtistNeedRevision(
+    param: IPaginationQueryParams,
+  ): ReturnResponsePagination<IListArtistResponse[]> {
+    const user: IGenerateJwtData = this.req['user'];
+    this.setPaginationData({
+      page: param.page,
+      size: param.size,
+    });
+    const findUser = await this.userRepository.findOneBy({ id: user.id });
+    const [data, count] = await this.artistRepository.findAndCount({
+      where: {
+        status: ArtistStatusEnum.NEED_REVISION,
+        created_by: { id: findUser.id },
+      },
+      relations: { created_by: true },
+    });
+    if (data && findUser) {
+      const dataList: IListArtistResponse[] = data.map((item) => {
+        return {
+          description: item.description,
+          created_at: item.createdAt,
+          slug: item.slug,
+          status: item.status,
+          name: item.name,
+          created_by: item?.created_by?.name,
+        };
+      });
+      return this.baseResponse.baseResponsePageable<IListArtistResponse[]>(
+        dataList,
+        {
+          size: this.paginationSize,
+          total_data: count,
+          page: this.paginationPage,
+        },
+      );
     }
   }
 }

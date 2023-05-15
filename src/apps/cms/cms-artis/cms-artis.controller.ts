@@ -19,6 +19,7 @@ import {
 import { ICreatedArtistDto } from '@dto/request/artis-request/ICreatedArtistDto';
 import { IListArtistResponse } from '@dto/request/response/artist-response/IListArtistResponse';
 import { SuperAdminGuard } from '@guard/super-admin.guard';
+import { INeedRevisionRequestDto } from '@dto/request/artis-request/INeedRevisionRequestDto';
 
 @Controller('cms/artist')
 export class CmsArtisController {
@@ -80,5 +81,24 @@ export class CmsArtisController {
   @Patch('/v1/approved/:slug')
   approveArtist(@Param('slug') slug: string) {
     return this.artisService.approvedArtistRequest(slug);
+  }
+
+  @UseGuards(SuperAdminGuard)
+  @Put('/v1/need-revision/:slug')
+  needRevisionArtist(
+    @Body() data: INeedRevisionRequestDto,
+    @Param('slug') slug: string,
+  ) {
+    return this.artisService.needRevisionArtist(slug, data);
+  }
+
+  @UseGuards(AdminGuard)
+  @Get('v1/list/need-revision')
+  getListNeedRevision(
+    @Query('size') size: number,
+    @Query('page') page: number,
+    @Query('search') search: string,
+  ): ReturnResponsePagination<IListArtistResponse[]> {
+    return this.artisService.getListArtistNeedRevision({ size, page, search });
   }
 }
