@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -37,5 +38,11 @@ export class CmsCategoriesController {
   @Put('v1/edit/:slug')
   editCategory(@Body() data: ICreateCategoryDto, @Param('slug') slug: string) {
     return this.categoriesService.editCategory(slug, data);
+  }
+
+  @UseGuards(SuperAdminGuard)
+  @Delete('v1/delete/:slug')
+  deleteCategory(@Param('slug') slug: string) {
+    return this.categoriesService.deleteCategory(slug);
   }
 }

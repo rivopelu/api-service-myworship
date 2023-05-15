@@ -67,6 +67,20 @@ export class CmsCategoriesService extends BaseService {
     }
   }
 
+  async deleteCategory(slug: string) {
+    const findData = await this.categoriesRepository.findOneBy({ slug });
+    if (!findData) {
+      throw new NotFoundException('category tidak ditemukan');
+    } else {
+      const deleted = await this.categoriesRepository.delete({
+        id: findData.id,
+      });
+      if (deleted) {
+        return this.baseResponse.BaseResponseWithMessage('Deleted success');
+      }
+    }
+  }
+
   async getListCategories(
     param: IPaginationQueryParams,
   ): ReturnResponsePagination<IListCategoriesResponse[]> {
