@@ -101,4 +101,13 @@ export class CmsArtisController {
   ): ReturnResponsePagination<IListArtistResponse[]> {
     return this.artisService.getListArtistNeedRevision({ size, page, search });
   }
+
+  @UseGuards(AdminGuard)
+  @Put('v1/submit-revision/:slug')
+  submitRevisionArtist(
+    @Param('slug') slug: string,
+    @Body() data: ICreatedArtistDto,
+  ) {
+    return this.artisService.submitRevisionArtist(slug, data);
+  }
 }

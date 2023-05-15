@@ -319,4 +319,32 @@ export class CmsArtisService extends BaseService {
       );
     }
   }
+
+  async submitRevisionArtist(slug: string, data: ICreatedArtistDto) {
+    const user: IGenerateJwtData = this.req['user'];
+    const findData = await this.artistRepository.findOneBy({
+      slug,
+      status: ArtistStatusEnum.NEED_REVISION,
+      created_by: { id: user.id },
+    });
+    if (!findData) {
+      throw new NotFoundException('artist tidak ditemukan');
+    } else {
+      const submitData = await this.artistRepository.update(
+        { slug },
+        {
+          name: data.name,
+          status: ArtistStatusEnum.PENDING,
+          description: data.description,
+          notesRequest: data.notes,
+          slug: this.generateSlug(data.name),
+        },
+      );
+      if (submitData) {
+        return this.baseResponse.BaseResponseWithMessage(
+          'Request Revision Success',
+        );
+      }
+    }
+  }
 }
