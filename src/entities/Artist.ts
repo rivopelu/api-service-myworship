@@ -30,6 +30,8 @@ export class Artist {
   createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+  @Column({ type: 'datetime', name: 'published_at' })
+  publishAt: Date;
   @ManyToOne(() => User, (Account) => Account)
   @JoinColumn({
     name: 'created_by',

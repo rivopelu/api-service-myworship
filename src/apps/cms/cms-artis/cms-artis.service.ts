@@ -249,7 +249,11 @@ export class CmsArtisService extends BaseService {
       const findUser = await this.userRepository.findOneBy({ id: user.id });
       const publishArtist = await this.artistRepository.update(
         { slug: slug },
-        { status: ArtistStatusEnum.PUBLISH, approved_by: findUser },
+        {
+          status: ArtistStatusEnum.PUBLISH,
+          approved_by: findUser,
+          publishAt: new Date(),
+        },
       );
       if (publishArtist) {
         return this.baseResponse.BaseResponseWithMessage('Artist Approved');
