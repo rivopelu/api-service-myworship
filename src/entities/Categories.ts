@@ -14,8 +14,7 @@ export class Categories {
   name: string;
   @Column({ unique: true })
   slug: string;
-  @Column({ name: 'is_publish', default: false })
-  isPublish: boolean;
+
   @Column({ nullable: true, type: 'longtext' })
   description: string;
   @CreateDateColumn({ name: 'created_at' })
