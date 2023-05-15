@@ -17,6 +17,7 @@ import { JwtService } from '@nestjs/jwt';
 import ILoginDto from '../../../dto/request/auth-request/ILoginDto';
 import { ISuccessLoginResponse } from '@dto/request/response/auth-response/ISuccessLoginResponse';
 import { UserRoleEnum } from '@enum/user-role-enum';
+import { find } from 'rxjs';
 
 @Injectable()
 export class CmsAuthService extends BaseService {
@@ -64,26 +65,31 @@ export class CmsAuthService extends BaseService {
     const findUser = await this.userRepository.findOneBy({ email: data.email });
     if (!findUser) {
       throw new NotFoundException('email tidak ditemukan');
-    } else if (findUser.role !== UserRoleEnum.ADMIN) {
-      throw new BadRequestException('Login Failed');
     } else {
-      const comparePassword = await this.utilsHelper.comparePassword(
-        data.password,
-        findUser.password,
-      );
-      if (!comparePassword) {
-        throw new BadRequestException('Login Failed');
+      if (
+        findUser.role === UserRoleEnum.ADMIN ||
+        findUser.role === UserRoleEnum.SUPER_ADMIN
+      ) {
+        const comparePassword = await this.utilsHelper.comparePassword(
+          data.password,
+          findUser.password,
+        );
+        if (!comparePassword) {
+          throw new BadRequestException('Login Failed');
+        } else {
+          const token = this.utilsHelper.generateJwt({
+            email: findUser.email,
+            username: findUser.username,
+            name: findUser.name,
+            id: findUser.id,
+            role: findUser.role,
+          });
+          return this.baseResponse.BaseResponse<ISuccessLoginResponse>({
+            access_token: token,
+          });
+        }
       } else {
-        const token = this.utilsHelper.generateJwt({
-          email: findUser.email,
-          username: findUser.username,
-          name: findUser.name,
-          id: findUser.id,
-          role: findUser.role,
-        });
-        return this.baseResponse.BaseResponse<ISuccessLoginResponse>({
-          access_token: token,
-        });
+        throw new BadRequestException('Login Failed');
       }
     }
   }

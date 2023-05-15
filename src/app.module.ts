@@ -10,17 +10,25 @@ import { CmsAuthService } from '@apps/cms/cms-auth/cms-auth.service';
 import { Artist } from '@entities/Artist';
 import { CmsArtisService } from '@apps/cms/cms-artis/cms-artis.service';
 import { CmsArtisController } from '@apps/cms/cms-artis/cms-artis.controller';
+import { Categories } from '@entities/Categories';
+import { CmsCategoriesController } from '@apps/cms/cms-categories/cms-categories.controller';
+import { CmsCategoriesService } from '@apps/cms/cms-categories/cms-categories.service';
 
 @Module({
   imports: [
     DbConfig,
-    TypeOrmModule.forFeature([User, Artist]),
+    TypeOrmModule.forFeature([User, Artist, Categories]),
     JwtModule.register({
       secret: ENV.JWT_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
   ],
-  controllers: [AppController, CmsAuthController, CmsArtisController],
-  providers: [CmsAuthService, CmsArtisService],
+  controllers: [
+    AppController,
+    CmsAuthController,
+    CmsArtisController,
+    CmsCategoriesController,
+  ],
+  providers: [CmsAuthService, CmsArtisService, CmsCategoriesService],
 })
 export class AppModule {}

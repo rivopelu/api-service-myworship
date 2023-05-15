@@ -10,7 +10,7 @@ import { ENV } from '@constants/ENV';
 import { UserRoleEnum } from '@enum/user-role-enum';
 
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class SuperAdminGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -23,7 +23,9 @@ export class AdminGuard implements CanActivate {
       request['user'] = await this.jwtService.verifyAsync(token, {
         secret: ENV.JWT_SECRET,
       });
-      if (request['user'].role !== UserRoleEnum.ADMIN) {
+      if (request['user'].role === UserRoleEnum.SUPER_ADMIN) {
+        return request['user'];
+      } else {
         throw new UnauthorizedException();
       }
     } catch {

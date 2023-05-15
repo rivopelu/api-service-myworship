@@ -21,9 +21,10 @@ import {
   IGenerateJwtData,
   IPaginationQueryParams,
 } from '@utils/utils-interfaces-type';
-import { find } from 'rxjs';
 import { IListArtistResponse } from '@dto/request/response/artist-response/IListArtistResponse';
 import { IDetailArtistResponse } from '@dto/request/response/artist-response/IDetailArtistResponse';
+import { ArtistStatusEnum } from '@enum/artist-status-enum';
+import { UserRoleEnum } from '@enum/user-role-enum';
 
 @Injectable()
 export class CmsArtisService extends BaseService {
@@ -58,6 +59,38 @@ export class CmsArtisService extends BaseService {
             slug: slug,
             description: data.description,
             created_by: findUser,
+            notesRequest: data.notes,
+            status: ArtistStatusEnum.PENDING,
+          });
+          if (newArtis) {
+            return this.baseResponse.BaseResponseWithMessage('SUCCESS');
+          }
+        }
+      }
+    }
+  }
+
+  async savedDraftRequestArtist(
+    data: ICreatedArtistDto,
+  ): ReturnResponseWithMessage {
+    const user: IGenerateJwtData = this.req['user'];
+    if (user) {
+      const findUser = await this.userRepository.findOneBy({
+        username: user.username,
+      });
+      const slug = this.generateSlug(data.name);
+      const findArtis = await this.artistRepository.findOneBy({ slug: slug });
+      if (findArtis) {
+        throw new BadRequestException('Nama Artis Telah Ada');
+      } else {
+        if (findUser) {
+          const newArtis = await this.artistRepository.save({
+            name: data.name,
+            slug: slug,
+            description: data.description,
+            created_by: findUser,
+            notesRequest: data.notes,
+            status: ArtistStatusEnum.DRAFT,
           });
           if (newArtis) {
             return this.baseResponse.BaseResponseWithMessage('SUCCESS');
@@ -68,14 +101,14 @@ export class CmsArtisService extends BaseService {
   }
 
   async updatedArtis(id: string, data: ICreatedArtistDto) {
-    const findArtist = await this.artistRepository.findOneBy({ id: id });
+    const findArtist = await this.artistRepository.findOneBy({ slug: id });
     if (!findArtist) {
       throw new NotFoundException('Artist Not Found');
     } else {
       const slug = this.generateSlug(data.name);
       const newArtistDataUpdate = await this.artistRepository.update(
         {
-          id: id,
+          slug: id,
         },
         {
           slug: slug,
@@ -89,16 +122,60 @@ export class CmsArtisService extends BaseService {
     }
   }
 
-  async getListArtist(
+  async getListArtistAll(
     param?: IPaginationQueryParams,
   ): ReturnResponsePagination<IListArtistResponse[]> {
     this.setPaginationData({
       page: param.page,
       size: param.size,
     });
+    const user: IGenerateJwtData = this.req['user'];
 
     const [data, count] = await this.artistRepository.findAndCount({
       where: {
+        created_by:
+          user.role === UserRoleEnum.ADMIN ? { id: user.id } : undefined,
+        name: param?.search ? Like(`%${param.search}%`) : undefined,
+      },
+      relations: {
+        created_by: true,
+      },
+      order: { createdAt: 'DESC' },
+      take: this.paginationSize,
+      skip: this.paginationSkip,
+    });
+    const resData: IListArtistResponse[] = data.map((item) => {
+      return {
+        description: item.description,
+        status: item.status,
+        created_at: item.createdAt,
+        slug: item.slug,
+        name: item.name,
+        created_by: item.created_by.name,
+      };
+    });
+    return this.baseResponse.baseResponsePageable<IListArtistResponse[]>(
+      resData,
+      {
+        page: this.paginationPage,
+        size: this.paginationSize,
+        total_data: count,
+      },
+    );
+  }
+
+  async getListArtistDraftUser(
+    param?: IPaginationQueryParams,
+  ): ReturnResponsePagination<IListArtistResponse[]> {
+    this.setPaginationData({
+      page: param.page,
+      size: param.size,
+    });
+    const user: IGenerateJwtData = this.req['user'];
+    const [data, count] = await this.artistRepository.findAndCount({
+      where: {
+        status: ArtistStatusEnum.DRAFT,
+        created_by: { id: user.id },
         name: param?.search ? Like(`%${param.search}%`) : undefined,
       },
       relations: {
@@ -112,8 +189,9 @@ export class CmsArtisService extends BaseService {
       return {
         description: item.description,
         slug: item.slug,
+        status: item.status,
         name: item.name,
-        id: item.id,
+        created_at: item.createdAt,
         created_by: item.created_by.name,
       };
     });
@@ -131,7 +209,7 @@ export class CmsArtisService extends BaseService {
     id: string,
   ): ReturnBaseResponse<IDetailArtistResponse> {
     const findArtist = await this.artistRepository.findOne({
-      where: { id },
+      where: { slug: id },
       relations: { created_by: true },
     });
     if (!findArtist) {
@@ -140,7 +218,6 @@ export class CmsArtisService extends BaseService {
       return this.baseResponse.BaseResponse<IDetailArtistResponse>({
         name: findArtist.name,
         slug: findArtist.slug,
-        id: findArtist.id,
         description: findArtist.description,
         created_by: findArtist.created_by.name,
       });
@@ -148,13 +225,34 @@ export class CmsArtisService extends BaseService {
   }
 
   async deleteArtist(id: string): ReturnResponseWithMessage {
-    const data = await this.artistRepository.findOneBy({ id });
+    const data = await this.artistRepository.findOneBy({ slug: id });
     if (!data) {
       throw new NotFoundException('Artist Not Found');
     } else {
-      const deleted = await this.artistRepository.delete({ id: id });
+      const deleted = await this.artistRepository.delete({ slug: id });
       if (deleted) {
         return this.baseResponse.BaseResponseWithMessage('Success Deleted');
+      }
+    }
+  }
+
+  async approvedArtistRequest(slug: string) {
+    const findArtist = await this.artistRepository.findOneBy({
+      slug,
+      status: ArtistStatusEnum.PENDING,
+    });
+    const user: IGenerateJwtData = this.req['user'];
+
+    if (!findArtist) {
+      throw new NotFoundException('Artist tidak ditemukan');
+    } else {
+      const findUser = await this.userRepository.findOneBy({ id: user.id });
+      const publishArtist = await this.artistRepository.update(
+        { slug: slug },
+        { status: ArtistStatusEnum.PUBLISH, approved_by: findUser },
+      );
+      if (publishArtist) {
+        return this.baseResponse.BaseResponseWithMessage('Artist Approved');
       }
     }
   }

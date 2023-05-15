@@ -1,8 +1,7 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class ICreatedArtistDto {
+export class ICreateCategoryDto {
   @IsNotEmpty()
   name: string;
-  description?: string;
-  notes?: string;
+  description: string;
 }

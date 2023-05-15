@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Generated,
   OneToMany,
   PrimaryColumn,
   PrimaryGeneratedColumn,
@@ -13,9 +12,8 @@ import { Artist } from '@entities/Artist';
 
 @Entity()
 export class User {
-  @Column({ primary: true })
-  @Generated('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('increment')
+  id: number;
   @Column({ unique: true })
   username: string;
   @Column()
