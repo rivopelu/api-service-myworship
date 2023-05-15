@@ -7,7 +7,9 @@ import {
 import { ISuccessLoginResponse } from '@dto/request/response/auth-response/ISuccessLoginResponse';
 import IRegisterDto from '@dto/request/auth-request/IRegisterDto';
 import ILoginDto from '@dto/request/auth-request/ILoginDto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('CMS AUTH CONTROLLER')
 @Controller('cms/auth')
 export class CmsAuthController {
   constructor(private authService: CmsAuthService) {}

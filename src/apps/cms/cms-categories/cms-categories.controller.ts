@@ -13,7 +13,9 @@ import { CmsCategoriesService } from '@apps/cms/cms-categories/cms-categories.se
 import { ICreateCategoryDto } from '@dto/request/categories-request/ICreateCategoryDto';
 import { SuperAdminGuard } from '@guard/super-admin.guard';
 import { AdminGuard } from '@guard/admin.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('CMS CATEGORIES CONTROLLER')
 @Controller('cms/categories')
 export class CmsCategoriesController {
   constructor(private categoriesService: CmsCategoriesService) {}
