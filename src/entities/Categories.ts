@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Lyrics } from '@entities/Lyrics';
 
 @Entity()
 export class Categories {
@@ -21,4 +23,6 @@ export class Categories {
   createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+  @ManyToMany(() => Lyrics, (cat) => cat.categories)
+  lyrics: Lyrics[];
 }
