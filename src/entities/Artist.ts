@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '@entities/User';
-import { ArtistStatusEnum } from '@enum/artist-status-enum';
+import { StatusEnum } from '@enum/status-enum';
 
 @Entity()
 export class Artist {
@@ -19,7 +19,7 @@ export class Artist {
   @Column({ unique: true })
   slug: string;
   @Column()
-  status: ArtistStatusEnum;
+  status: StatusEnum;
   @Column({ nullable: true, type: 'longtext' })
   description: string;
   @Column({ nullable: true, name: 'notes_request' })

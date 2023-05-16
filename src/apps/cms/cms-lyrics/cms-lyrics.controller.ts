@@ -13,6 +13,8 @@ import { AdminGuard } from '@guard/admin.guard';
 import { ICreateLyricsDto } from '@dto/request/lyrics-request/ICreateLyricsDto';
 import { CmsLyricsService } from '@apps/cms/cms-lyrics/cms-lyrics.service';
 import { SuperAdminGuard } from '@guard/super-admin.guard';
+import { StatusEnum } from '@enum/status-enum';
+import { statusType } from '@utils/status-type';
 
 @ApiTags('CMS LYRICS CONTROLLER')
 @Controller('cms/lyrics')
@@ -28,13 +30,14 @@ export class CmsLyricsController {
   }
 
   @UseGuards(AdminGuard)
-  @Get('v1/list/all')
+  @Get('v1/list/:status')
   getListAll(
     @Query('size') size: number,
     @Query('page') page: number,
     @Query('search') search: string,
+    @Param('status') status: statusType,
   ) {
-    return this.lyricsService.getListAll({ size, page, search });
+    return this.lyricsService.getListAll(status, { size, page, search });
   }
 
   // POST CONTROLLER

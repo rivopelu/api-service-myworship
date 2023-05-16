@@ -1,4 +1,4 @@
-import { LyricsStatusEnum } from '@enum/lyrics-status-enum';
+import { StatusEnum } from '@enum/status-enum';
 
 export interface IResListLyric {
   id?: number;
@@ -6,7 +6,8 @@ export interface IResListLyric {
   slug: string;
   created_at: Date;
   publish_by?: string;
-  status: LyricsStatusEnum;
+  status_enum: StatusEnum;
+  status_string: string;
   artis_name: string;
   artis_slug: string;
 }

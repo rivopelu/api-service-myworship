@@ -18,16 +18,19 @@ import {
 } from '@utils/utils-interfaces-type';
 import { Categories } from '@entities/Categories';
 import { Artist } from '@entities/Artist';
-import { LyricsStatusEnum } from '@enum/lyrics-status-enum';
 import BaseService from '@apps/base-service';
 import { UserRoleEnum } from '@enum/user-role-enum';
 import { IDetailLyricResponse } from '@dto/request/response/lyric-response/IDetailLyricResponse';
 import { IResListLyric } from '@dto/request/response/lyric-response/IResListLyric';
 import { ReturnResponsePagination } from '@config/base-response-config';
+import { TextHelper } from '@helper/text-helper';
+import { StatusEnum } from '@enum/status-enum';
+import { parseTypeStatusToEnum, statusType } from '@utils/status-type';
 
 @Injectable()
 export class CmsLyricsService extends BaseService {
   private utilsHelper = new UtilsHelper();
+  private textHelper = new TextHelper();
 
   constructor(
     @InjectRepository(Lyrics)
@@ -68,7 +71,8 @@ export class CmsLyricsService extends BaseService {
         created_by: item?.created_by?.name,
         lyric: item.lyric,
         publish_by: item?.approved_by?.name,
-        status: item.status,
+        status_enum: item.status,
+        status_string: this.textHelper.toLowercaseEnum(item.status),
         artis_name: item.artist.name,
         artis_slug: item.artist.slug,
         created_at: item.createdAt,
@@ -121,7 +125,7 @@ export class CmsLyricsService extends BaseService {
         created_by: { id: user.id },
         artist: findArtist,
         notesRequest: data.notes,
-        status: LyricsStatusEnum.PENDING,
+        status: StatusEnum.PENDING,
       });
       if (newData) {
         return this.baseResponse.BaseResponseWithMessage('Success Request');
@@ -130,6 +134,7 @@ export class CmsLyricsService extends BaseService {
   }
 
   async getListAll(
+    status: statusType,
     param: IPaginationQueryParams,
   ): ReturnResponsePagination<IResListLyric[]> {
     this.setPaginationData({
@@ -137,9 +142,11 @@ export class CmsLyricsService extends BaseService {
       page: param.page,
       size: param.size,
     });
+    console.log(parseTypeStatusToEnum(status));
     const user: IGenerateJwtData = this.req['user'];
     const [data, count] = await this.lyricsRepository.findAndCount({
       where: {
+        status: parseTypeStatusToEnum(status),
         created_by:
           user.role === UserRoleEnum.ADMIN ? { id: user.id } : undefined,
         title: param?.search ? Like(`%${param.search}%`) : undefined,
@@ -161,7 +168,8 @@ export class CmsLyricsService extends BaseService {
           slug: item.slug,
           artis_name: item.artist.name,
           artis_slug: item.artist.slug,
-          status: item.status,
+          status_enum: item.status,
+          status_string: this.textHelper.toLowercaseEnum(item.status),
           created_at: item.createdAt,
           publish_by: item?.approved_by?.name,
         };
@@ -178,7 +186,7 @@ export class CmsLyricsService extends BaseService {
     const user: IGenerateJwtData = this.req['user'];
     const findData = await this.lyricsRepository.findOneBy({
       slug: slug,
-      status: LyricsStatusEnum.PENDING,
+      status: StatusEnum.PENDING,
     });
     if (!findData) {
       throw new NotFoundException('Lyrics Not Found');
@@ -186,7 +194,7 @@ export class CmsLyricsService extends BaseService {
       const updatedData = await this.lyricsRepository.update(
         { id: findData.id },
         {
-          status: LyricsStatusEnum.PUBLISH,
+          status: StatusEnum.PUBLISH,
           approved_by: { id: user.id },
         },
       );

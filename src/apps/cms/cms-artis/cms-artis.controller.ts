@@ -21,6 +21,7 @@ import { IListArtistResponse } from '@dto/request/response/artist-response/IList
 import { SuperAdminGuard } from '@guard/super-admin.guard';
 import { INeedRevisionRequestDto } from '@dto/request/artis-request/INeedRevisionRequestDto';
 import { ApiTags } from '@nestjs/swagger';
+import { statusType } from '@utils/status-type';
 
 @ApiTags('CMS ARTIST CONTROLLER')
 @Controller('cms/artist')
@@ -28,13 +29,14 @@ export class CmsArtisController {
   constructor(private artisService: CmsArtisService) {}
 
   @UseGuards(AdminGuard)
-  @Get('v1/list')
+  @Get('v1/list/:status')
   getListArtist(
     @Query('size') size: number,
     @Query('page') page: number,
     @Query('search') search: string,
+    @Param('status') status: statusType,
   ): ReturnResponsePagination<IListArtistResponse[]> {
-    return this.artisService.getListArtistAll({ size, page, search });
+    return this.artisService.getListArtistAll(status, { size, page, search });
   }
 
   @UseGuards(AdminGuard)

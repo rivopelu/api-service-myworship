@@ -9,10 +9,10 @@ import {
   UpdateDateColumn,
   JoinTable,
 } from 'typeorm';
-import { LyricsStatusEnum } from '@enum/lyrics-status-enum';
 import { User } from '@entities/User';
 import { Artist } from '@entities/Artist';
 import { Categories } from '@entities/Categories';
+import { StatusEnum } from '@enum/status-enum';
 
 @Entity()
 export class Lyrics {
@@ -23,7 +23,7 @@ export class Lyrics {
   @Column({ unique: true })
   slug: string;
   @Column()
-  status: LyricsStatusEnum;
+  status: StatusEnum;
   @Column({ type: 'longtext' })
   description: string;
   @Column({ type: 'longtext' })

@@ -23,9 +23,14 @@ import {
 } from '@utils/utils-interfaces-type';
 import { IListArtistResponse } from '@dto/request/response/artist-response/IListArtistResponse';
 import { IDetailArtistResponse } from '@dto/request/response/artist-response/IDetailArtistResponse';
-import { ArtistStatusEnum } from '@enum/artist-status-enum';
 import { UserRoleEnum } from '@enum/user-role-enum';
 import { INeedRevisionRequestDto } from '@dto/request/artis-request/INeedRevisionRequestDto';
+import { StatusEnum } from '@enum/status-enum';
+import {
+  parseEnumStatusToType,
+  parseTypeStatusToEnum,
+  statusType,
+} from '@utils/status-type';
 
 @Injectable()
 export class CmsArtisService extends BaseService {
@@ -61,7 +66,7 @@ export class CmsArtisService extends BaseService {
             description: data.description,
             created_by: findUser,
             notesRequest: data.notes,
-            status: ArtistStatusEnum.PENDING,
+            status: StatusEnum.PENDING,
           });
           if (newArtis) {
             return this.baseResponse.BaseResponseWithMessage('SUCCESS');
@@ -91,7 +96,7 @@ export class CmsArtisService extends BaseService {
             description: data.description,
             created_by: findUser,
             notesRequest: data.notes,
-            status: ArtistStatusEnum.DRAFT,
+            status: StatusEnum.DRAFT,
           });
           if (newArtis) {
             return this.baseResponse.BaseResponseWithMessage('SUCCESS');
@@ -124,6 +129,7 @@ export class CmsArtisService extends BaseService {
   }
 
   async getListArtistAll(
+    status: statusType,
     param?: IPaginationQueryParams,
   ): ReturnResponsePagination<IListArtistResponse[]> {
     this.setPaginationData({
@@ -134,6 +140,7 @@ export class CmsArtisService extends BaseService {
 
     const [data, count] = await this.artistRepository.findAndCount({
       where: {
+        status: parseTypeStatusToEnum(status),
         created_by:
           user.role === UserRoleEnum.ADMIN ? { id: user.id } : undefined,
         name: param?.search ? Like(`%${param.search}%`) : undefined,
@@ -148,7 +155,8 @@ export class CmsArtisService extends BaseService {
     const resData: IListArtistResponse[] = data.map((item) => {
       return {
         description: item.description,
-        status: item.status,
+        status_enum: item.status,
+        status_string: parseEnumStatusToType(item.status),
         created_at: item.createdAt,
         slug: item.slug,
         name: item.name,
@@ -175,7 +183,7 @@ export class CmsArtisService extends BaseService {
     const user: IGenerateJwtData = this.req['user'];
     const [data, count] = await this.artistRepository.findAndCount({
       where: {
-        status: ArtistStatusEnum.DRAFT,
+        status: StatusEnum.DRAFT,
         created_by: { id: user.id },
         name: param?.search ? Like(`%${param.search}%`) : undefined,
       },
@@ -190,7 +198,8 @@ export class CmsArtisService extends BaseService {
       return {
         description: item.description,
         slug: item.slug,
-        status: item.status,
+        status_enum: item.status,
+        status_string: parseEnumStatusToType(item.status),
         name: item.name,
         created_at: item.createdAt,
         created_by: item.created_by.name,
@@ -240,7 +249,7 @@ export class CmsArtisService extends BaseService {
   async approvedArtistRequest(slug: string) {
     const findArtist = await this.artistRepository.findOneBy({
       slug,
-      status: ArtistStatusEnum.PENDING,
+      status: StatusEnum.PENDING,
     });
     const user: IGenerateJwtData = this.req['user'];
 
@@ -251,7 +260,7 @@ export class CmsArtisService extends BaseService {
       const publishArtist = await this.artistRepository.update(
         { slug: slug },
         {
-          status: ArtistStatusEnum.PUBLISH,
+          status: StatusEnum.PUBLISH,
           approved_by: findUser,
           publishAt: new Date(),
         },
@@ -265,14 +274,14 @@ export class CmsArtisService extends BaseService {
   async needRevisionArtist(slug: string, data: INeedRevisionRequestDto) {
     const findData = await this.artistRepository.findOneBy({
       slug: slug,
-      status: ArtistStatusEnum.PENDING,
+      status: StatusEnum.PENDING,
     });
     if (!findData) {
       throw new NotFoundException('artist tidak di temukan');
     } else {
       const updatedData = await this.artistRepository.update(
         { slug },
-        { status: ArtistStatusEnum.NEED_REVISION, notesRevision: data.notes },
+        { status: StatusEnum.NEED_REVISION, notesRevision: data.notes },
       );
       if (updatedData) {
         return this.baseResponse.BaseResponseWithMessage(
@@ -293,7 +302,7 @@ export class CmsArtisService extends BaseService {
     const findUser = await this.userRepository.findOneBy({ id: user.id });
     const [data, count] = await this.artistRepository.findAndCount({
       where: {
-        status: ArtistStatusEnum.NEED_REVISION,
+        status: StatusEnum.NEED_REVISION,
         created_by: { id: findUser.id },
       },
       relations: { created_by: true },
@@ -304,7 +313,8 @@ export class CmsArtisService extends BaseService {
           description: item.description,
           created_at: item.createdAt,
           slug: item.slug,
-          status: item.status,
+          status_enum: item.status,
+          status_string: parseEnumStatusToType(item.status),
           name: item.name,
           created_by: item?.created_by?.name,
         };
@@ -324,7 +334,7 @@ export class CmsArtisService extends BaseService {
     const user: IGenerateJwtData = this.req['user'];
     const findData = await this.artistRepository.findOneBy({
       slug,
-      status: ArtistStatusEnum.NEED_REVISION,
+      status: StatusEnum.NEED_REVISION,
       created_by: { id: user.id },
     });
     if (!findData) {
@@ -334,7 +344,7 @@ export class CmsArtisService extends BaseService {
         { slug },
         {
           name: data.name,
-          status: ArtistStatusEnum.PENDING,
+          status: StatusEnum.PENDING,
           description: data.description,
           notesRequest: data.notes,
           slug: this.generateSlug(data.name),
