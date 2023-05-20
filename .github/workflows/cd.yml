@@ -48,5 +48,5 @@ jobs :
             rm -rf dist
             npm install
             npm run build:staging
-            pm2 start allx
+            pm2 restart all
             echo success
