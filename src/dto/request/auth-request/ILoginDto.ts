@@ -9,3 +9,7 @@ export default class ILoginDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class ILoginGoogle {
+  token: string;
+}

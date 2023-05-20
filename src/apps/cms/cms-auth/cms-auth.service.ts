@@ -17,7 +17,6 @@ import { JwtService } from '@nestjs/jwt';
 import ILoginDto from '../../../dto/request/auth-request/ILoginDto';
 import { ISuccessLoginResponse } from '@dto/request/response/auth-response/ISuccessLoginResponse';
 import { UserRoleEnum } from '@enum/user-role-enum';
-import { find } from 'rxjs';
 
 @Injectable()
 export class CmsAuthService extends BaseService {
@@ -57,6 +56,36 @@ export class CmsAuthService extends BaseService {
         if (newDataUser) {
           return this.baseResponse.BaseResponseWithMessage('SUCCESS');
         }
+      }
+    }
+  }
+
+  async loginWithGoogle(token: string) {
+    const dataResGoogle = await this.utilsHelper.getDataFromGoogle(token);
+    if (dataResGoogle.data) {
+      const findEmail = await this.userRepository.findOneBy({
+        email: dataResGoogle.data.email,
+      });
+      if (findEmail) {
+        if (
+          findEmail.role === UserRoleEnum.USER ||
+          findEmail.role === UserRoleEnum.SUPER_ADMIN
+        ) {
+          const token = this.utilsHelper.generateJwt({
+            email: findEmail.email,
+            username: findEmail.username,
+            name: findEmail.name,
+            id: findEmail.id,
+            role: findEmail.role,
+          });
+          return this.baseResponse.BaseResponse<ISuccessLoginResponse>({
+            access_token: token,
+          });
+        } else {
+          throw new BadRequestException('Login Failed');
+        }
+      } else {
+        throw new BadRequestException('Login Failed');
       }
     }
   }
