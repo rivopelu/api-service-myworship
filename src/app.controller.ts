@@ -6,6 +6,6 @@ import { ApiTags } from '@nestjs/swagger';
 export class AppController {
   @Get()
   ping(): string {
-    return 'PONG PONG';
+    return 'PONG PONG PONG';
   }
 }
