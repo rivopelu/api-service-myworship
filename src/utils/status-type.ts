@@ -1,5 +1,4 @@
 import { StatusEnum } from '@enum/status-enum';
-import { all } from 'axios';
 
 export type statusType =
   | 'publish'
