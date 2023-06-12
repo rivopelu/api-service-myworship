@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   Injectable,
@@ -26,10 +27,10 @@ export class SuperAdminGuard implements CanActivate {
       if (request['user'].role === UserRoleEnum.SUPER_ADMIN) {
         return request['user'];
       } else {
-        throw new UnauthorizedException();
+        throw new BadRequestException('Your Role Cannot Access This Feature');
       }
     } catch {
-      throw new UnauthorizedException();
+      throw new BadRequestException();
     }
     return true;
   }

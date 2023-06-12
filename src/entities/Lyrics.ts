@@ -39,6 +39,9 @@ export class Lyrics {
   @Column({ type: 'datetime', name: 'published_at' })
   publishAt: Date;
 
+  @Column({ nullable: true })
+  image: string;
+
   @ManyToOne(() => Artist, (Artist) => Artist)
   @JoinColumn({
     name: 'artist',

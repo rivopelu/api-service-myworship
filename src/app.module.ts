@@ -20,6 +20,8 @@ import { GeneralService } from '@apps/general/general.service';
 import { GeneralController } from '@apps/general/general.controller';
 import { S3Service } from './services/s3.service';
 import { Media } from '@entities/Media';
+import { CmsUserController } from './apps/cms/cms-user/cms-user.controller';
+import { CmsUserService } from './apps/cms/cms-user/cms-user.service';
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { Media } from '@entities/Media';
     CmsCategoriesController,
     CmsLyricsController,
     GeneralController,
+    CmsUserController,
   ],
   providers: [
     CmsAuthService,
@@ -45,6 +48,7 @@ import { Media } from '@entities/Media';
     CmsLyricsService,
     GeneralService,
     S3Service,
+    CmsUserService,
   ],
 })
 export class AppModule {}

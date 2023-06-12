@@ -8,4 +8,5 @@ export interface IListArtistResponse {
   status_enum: StatusEnum;
   status_string: string;
   created_at: Date;
+  image?: string;
 }

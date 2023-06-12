@@ -4,7 +4,7 @@ import {
   ReturnBaseResponse,
   ReturnResponseWithMessage,
 } from '@config/base-response-config';
-import { ISuccessLoginResponse } from '@dto/request/response/auth-response/ISuccessLoginResponse';
+import { ISuccessLoginResponse } from '@dto/response/auth-response/ISuccessLoginResponse';
 import IRegisterDto from '@dto/request/auth-request/IRegisterDto';
 import ILoginDto, { ILoginGoogle } from '@dto/request/auth-request/ILoginDto';
 import { ApiTags } from '@nestjs/swagger';

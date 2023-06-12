@@ -13,7 +13,7 @@ import { Categories } from '@entities/Categories';
 import { UtilsHelper } from '@helper/utils-helper';
 import { getTransientInstances } from '@nestjs/core/injector/helpers/transient-instances';
 import { IPaginationQueryParams } from '@utils/utils-interfaces-type';
-import { IListCategoriesResponse } from '@dto/request/response/categories-response/IListCategoriesResponse';
+import { IListCategoriesResponse } from '@dto/response/categories-response/IListCategoriesResponse';
 import { ReturnResponsePagination } from '@config/base-response-config';
 
 @Injectable()

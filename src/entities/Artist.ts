@@ -18,6 +18,8 @@ export class Artist {
   name: string;
   @Column({ unique: true })
   slug: string;
+  @Column({ nullable: true })
+  image: string;
   @Column()
   status: StatusEnum;
   @Column({ nullable: true, type: 'longtext' })

@@ -42,7 +42,7 @@ export class S3Service extends BaseService {
 
   async updateAcl(mediaId: string): Promise<string> {
     const media = await this.mediaRepository.findOne({
-      where: { id: mediaId },
+      where: { uuid: mediaId },
     });
     const s3 = this.getS3();
     s3.putObject({
@@ -67,22 +67,21 @@ export class S3Service extends BaseService {
     const extension = arr_name.pop();
     const name = arr_name.join('.');
     const key = objectId + name.replace(' ', '-') + '.' + extension;
-    const data: Media = {
-      id: objectId,
-      key: this.folder + '/' + key,
-      fileName: String(file.originalname),
-      size: file.size,
-      mimeType: file.mimetype,
-    };
     const successUpload = await this.uploadS3(
       file.buffer,
       key,
       file.mimetype,
     ).then();
     if (successUpload) {
-      const newMedia = await this.mediaRepository.save(data);
+      const newMedia = await this.mediaRepository.save({
+        uuid: objectId,
+        key: this.folder + '/' + key,
+        fileName: String(file.originalname),
+        size: file.size,
+        mimeType: file.mimetype,
+      });
       if (newMedia) {
-        const url = await this.updateAcl(newMedia.id);
+        const url = await this.updateAcl(newMedia.uuid);
         return this.baseResponse.BaseResponse<IResUploadFile>({
           name: String(file.originalname),
           url: url,
@@ -95,7 +94,7 @@ export class S3Service extends BaseService {
 
   async deleteFileS3(mediaId: string): ReturnResponseWithMessage {
     const media = await this.mediaRepository.findOne({
-      where: { id: mediaId },
+      where: { uuid: mediaId },
     });
     const s3 = this.getS3();
     if (media) {

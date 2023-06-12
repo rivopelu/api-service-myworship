@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ICreateLyricsDto } from '@dto/request/lyrics-request/ICreateLyricsDto';
 import { UtilsHelper } from '@helper/utils-helper';
@@ -20,8 +21,8 @@ import { Categories } from '@entities/Categories';
 import { Artist } from '@entities/Artist';
 import BaseService from '@apps/base-service';
 import { UserRoleEnum } from '@enum/user-role-enum';
-import { IDetailLyricResponse } from '@dto/request/response/lyric-response/IDetailLyricResponse';
-import { IResListLyric } from '@dto/request/response/lyric-response/IResListLyric';
+import { IDetailLyricResponse } from '@dto/response/lyric-response/IDetailLyricResponse';
+import { IResListLyric } from '@dto/response/lyric-response/IResListLyric';
 import { ReturnResponsePagination } from '@config/base-response-config';
 import { TextHelper } from '@helper/text-helper';
 import { StatusEnum } from '@enum/status-enum';
@@ -126,6 +127,7 @@ export class CmsLyricsService extends BaseService {
         artist: findArtist,
         notesRequest: data.notes,
         status: StatusEnum.PENDING,
+        image: data?.image ? data.image : null,
       });
       if (newData) {
         return this.baseResponse.BaseResponseWithMessage('Success Request');
@@ -172,6 +174,8 @@ export class CmsLyricsService extends BaseService {
           status_string: this.textHelper.toLowercaseEnum(item.status),
           created_at: item.createdAt,
           publish_by: item?.approved_by?.name,
+          created_by: item?.created_by?.name,
+          id: item.id,
         };
       });
       return this.baseResponse.baseResponsePageable(listDataRes, {
@@ -200,6 +204,60 @@ export class CmsLyricsService extends BaseService {
       );
       if (updatedData) {
         return this.baseResponse.BaseResponseWithMessage('Approved Success');
+      }
+    }
+  }
+
+  async editLyric(data: ICreateLyricsDto, slug: string) {
+    const user: IGenerateJwtData = this.req['user'];
+    const getListCategories = await this.categoriesRepository.find();
+
+    const findData = await this.lyricsRepository.findOne({
+      where: {
+        slug: slug,
+        created_by: {
+          id: user.id,
+        },
+      },
+    });
+    const findArtist = await this.artistRepository.findOneBy({
+      slug: data.artist_slug,
+    });
+    if (!findArtist) {
+      throw new BadRequestException('Artist Not Found');
+    }
+    const checkCategories = (): Categories[] => {
+      const dataResult: Categories[] = [];
+      data.categories_id.map((item: number) => {
+        const data = getListCategories.find((e) => e.id === item);
+        if (data) {
+          dataResult.push(data);
+        } else {
+          throw new BadRequestException('Categories Id Not Found');
+        }
+      });
+      return dataResult;
+    };
+    if (!findData) {
+      throw new NotFoundException('Lyric Not Found'); // ERROR IN EDIT LIRIK
+    } else {
+      const newData = await this.lyricsRepository.update(
+        { id: findData.id },
+        {
+          title: data.title,
+          slug: this.utilsHelper.generateSlug(data.title),
+          description: data.description,
+          lyric: data.lyric,
+          categories: checkCategories(),
+          created_by: { id: user.id },
+          artist: findArtist,
+          notesRequest: data.notes,
+          status: StatusEnum.PENDING,
+          image: data?.image ? data.image : null,
+        },
+      );
+      if (newData) {
+        return this.baseResponse.BaseResponseWithMessage('Success Request');
       }
     }
   }

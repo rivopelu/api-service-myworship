@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -13,7 +14,6 @@ import { AdminGuard } from '@guard/admin.guard';
 import { ICreateLyricsDto } from '@dto/request/lyrics-request/ICreateLyricsDto';
 import { CmsLyricsService } from '@apps/cms/cms-lyrics/cms-lyrics.service';
 import { SuperAdminGuard } from '@guard/super-admin.guard';
-import { StatusEnum } from '@enum/status-enum';
 import { statusType } from '@utils/status-type';
 
 @ApiTags('CMS LYRICS CONTROLLER')
@@ -46,6 +46,13 @@ export class CmsLyricsController {
   @Post('/v1/new')
   requestCreatedLyrics(@Body() data: ICreateLyricsDto) {
     return this.lyricsService.requestCreateLyrics(data);
+  }
+
+  // PUT CONTROLLER
+  @UseGuards(AdminGuard)
+  @Put('/v1/edit/:slug')
+  lyricEdit(@Body() data: ICreateLyricsDto, @Param('slug') slug: string) {
+    return this.lyricsService.editLyric(data, slug);
   }
 
   // PATCH CONTROLLER

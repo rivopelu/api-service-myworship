@@ -11,6 +11,6 @@ export const DbConfig = TypeOrmModule.forRoot({
   entities: [],
   synchronize: true,
   dropSchema: false,
-  logging: true,
+  logging: false,
   autoLoadEntities: true,
 });

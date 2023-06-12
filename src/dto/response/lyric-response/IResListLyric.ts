@@ -10,4 +10,5 @@ export interface IResListLyric {
   status_string: string;
   artis_name: string;
   artis_slug: string;
+  created_by: string;
 }

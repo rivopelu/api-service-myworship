@@ -15,7 +15,7 @@ import { Repository } from 'typeorm';
 import { UtilsHelper } from '@helper/utils-helper';
 import { JwtService } from '@nestjs/jwt';
 import ILoginDto from '../../../dto/request/auth-request/ILoginDto';
-import { ISuccessLoginResponse } from '@dto/request/response/auth-response/ISuccessLoginResponse';
+import { ISuccessLoginResponse } from '@dto/response/auth-response/ISuccessLoginResponse';
 import { UserRoleEnum } from '@enum/user-role-enum';
 
 @Injectable()

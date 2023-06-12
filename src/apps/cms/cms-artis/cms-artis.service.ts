@@ -21,8 +21,8 @@ import {
   IGenerateJwtData,
   IPaginationQueryParams,
 } from '@utils/utils-interfaces-type';
-import { IListArtistResponse } from '@dto/request/response/artist-response/IListArtistResponse';
-import { IDetailArtistResponse } from '@dto/request/response/artist-response/IDetailArtistResponse';
+import { IListArtistResponse } from '@dto/response/artist-response/IListArtistResponse';
+import { IDetailArtistResponse } from '@dto/response/artist-response/IDetailArtistResponse';
 import { UserRoleEnum } from '@enum/user-role-enum';
 import { INeedRevisionRequestDto } from '@dto/request/artis-request/INeedRevisionRequestDto';
 import { StatusEnum } from '@enum/status-enum';
@@ -31,9 +31,13 @@ import {
   parseTypeStatusToEnum,
   statusType,
 } from '@utils/status-type';
+import { addHours } from 'date-fns';
+import { DateHelper } from '@helper/date-helper';
 
 @Injectable()
 export class CmsArtisService extends BaseService {
+  public dateHelper = new DateHelper();
+
   constructor(
     @InjectRepository(Artist)
     private artistRepository: Repository<Artist>,
@@ -67,6 +71,7 @@ export class CmsArtisService extends BaseService {
             created_by: findUser,
             notesRequest: data.notes,
             status: StatusEnum.PENDING,
+            image: data?.image ? data.image : null,
           });
           if (newArtis) {
             return this.baseResponse.BaseResponseWithMessage('SUCCESS');
@@ -97,6 +102,7 @@ export class CmsArtisService extends BaseService {
             created_by: findUser,
             notesRequest: data.notes,
             status: StatusEnum.DRAFT,
+            image: data?.image ? data.image : undefined,
           });
           if (newArtis) {
             return this.baseResponse.BaseResponseWithMessage('SUCCESS');
@@ -120,6 +126,7 @@ export class CmsArtisService extends BaseService {
           slug: slug,
           name: data.name,
           description: data.description,
+          image: data?.image ? data.image : null,
         },
       );
       if (newArtistDataUpdate) {
@@ -152,15 +159,17 @@ export class CmsArtisService extends BaseService {
       take: this.paginationSize,
       skip: this.paginationSkip,
     });
+
     const resData: IListArtistResponse[] = data.map((item) => {
       return {
         description: item.description,
         status_enum: item.status,
         status_string: parseEnumStatusToType(item.status),
-        created_at: item.createdAt,
+        created_at: this.dateHelper.parseToUtc(item.createdAt),
         slug: item.slug,
         name: item.name,
         created_by: item.created_by.name,
+        image: item?.image,
       };
     });
     return this.baseResponse.baseResponsePageable<IListArtistResponse[]>(
@@ -203,6 +212,7 @@ export class CmsArtisService extends BaseService {
         name: item.name,
         created_at: item.createdAt,
         created_by: item.created_by.name,
+        image: item?.image,
       };
     });
     return this.baseResponse.baseResponsePageable<IListArtistResponse[]>(
@@ -216,10 +226,10 @@ export class CmsArtisService extends BaseService {
   }
 
   async getDetailArtistById(
-    id: string,
+    slug: string,
   ): ReturnBaseResponse<IDetailArtistResponse> {
     const findArtist = await this.artistRepository.findOne({
-      where: { slug: id },
+      where: { slug: slug },
       relations: { created_by: true },
     });
     if (!findArtist) {
@@ -228,8 +238,14 @@ export class CmsArtisService extends BaseService {
       return this.baseResponse.BaseResponse<IDetailArtistResponse>({
         name: findArtist.name,
         slug: findArtist.slug,
+        request_note: findArtist.notesRequest,
+        status: findArtist.status,
+        revision_notes: findArtist.notesRevision,
         description: findArtist.description,
         created_by: findArtist.created_by.name,
+        image: findArtist.image ? findArtist.image : null,
+        created_date: findArtist.createdAt,
+        publish_date: findArtist.publishAt,
       });
     }
   }
@@ -317,6 +333,7 @@ export class CmsArtisService extends BaseService {
           status_string: parseEnumStatusToType(item.status),
           name: item.name,
           created_by: item?.created_by?.name,
+          image: item?.image,
         };
       });
       return this.baseResponse.baseResponsePageable<IListArtistResponse[]>(
@@ -348,6 +365,7 @@ export class CmsArtisService extends BaseService {
           description: data.description,
           notesRequest: data.notes,
           slug: this.generateSlug(data.name),
+          image: data?.image ? data.image : null,
         },
       );
       if (submitData) {

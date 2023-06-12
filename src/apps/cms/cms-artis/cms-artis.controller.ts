@@ -17,7 +17,7 @@ import {
   ReturnResponseWithMessage,
 } from '@config/base-response-config';
 import { ICreatedArtistDto } from '@dto/request/artis-request/ICreatedArtistDto';
-import { IListArtistResponse } from '@dto/request/response/artist-response/IListArtistResponse';
+import { IListArtistResponse } from '@dto/response/artist-response/IListArtistResponse';
 import { SuperAdminGuard } from '@guard/super-admin.guard';
 import { INeedRevisionRequestDto } from '@dto/request/artis-request/INeedRevisionRequestDto';
 import { ApiTags } from '@nestjs/swagger';
@@ -50,8 +50,8 @@ export class CmsArtisController {
   }
 
   @UseGuards(AdminGuard)
-  @Get('/v1/detail/:id')
-  getDetailArtistById(@Param('id') id: string) {
+  @Get('/v1/detail/:slug')
+  getDetailArtistById(@Param('slug') id: string) {
     return this.artisService.getDetailArtistById(id);
   }
 

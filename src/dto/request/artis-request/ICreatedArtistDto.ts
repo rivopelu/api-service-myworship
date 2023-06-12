@@ -15,4 +15,5 @@ export class ICreatedArtistDto {
     name: 'notes',
   })
   notes?: string;
+  image?: string;
 }

@@ -19,4 +19,5 @@ export class ICreateLyricsDto {
   @IsNotEmpty()
   @ApiProperty({ name: 'categories id' })
   categories_id: number[];
+  image?: string;
 }
