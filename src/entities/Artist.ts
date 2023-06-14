@@ -34,6 +34,8 @@ export class Artist {
   updatedAt: Date;
   @Column({ type: 'datetime', name: 'published_at' })
   publishAt: Date;
+  @Column({ nullable: true, name: 'reject_reason' })
+  rejectReason: string;
   @ManyToOne(() => User, (Account) => Account)
   @JoinColumn({
     name: 'created_by',

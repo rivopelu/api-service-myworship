@@ -9,6 +9,7 @@ export interface IDetailArtistResponse {
   request_note: string;
   revision_notes: string;
   status: StatusEnum;
+  reject_reason: string;
   created_date: Date;
   publish_date: Date;
 }

@@ -22,6 +22,7 @@ import { SuperAdminGuard } from '@guard/super-admin.guard';
 import { INeedRevisionRequestDto } from '@dto/request/artis-request/INeedRevisionRequestDto';
 import { ApiTags } from '@nestjs/swagger';
 import { statusType } from '@utils/status-type';
+import { IReqRejectReviseArtist } from '@dto/request/artis-request/IReqRejectReviseArtist';
 
 @ApiTags('CMS ARTIST CONTROLLER')
 @Controller('cms/artist')
@@ -115,5 +116,14 @@ export class CmsArtisController {
   @Patch('/v1/approved/:slug')
   approveArtist(@Param('slug') slug: string) {
     return this.artisService.approvedArtistRequest(slug);
+  }
+
+  @UseGuards(SuperAdminGuard)
+  @Put('/v1/reject/:slug')
+  rejectArtist(
+    @Body() body: IReqRejectReviseArtist,
+    @Param('slug') slug: string,
+  ) {
+    return this.artisService.rejectArtist(body, slug);
   }
 }

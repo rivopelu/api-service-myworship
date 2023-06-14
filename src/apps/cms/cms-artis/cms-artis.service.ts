@@ -31,8 +31,8 @@ import {
   parseTypeStatusToEnum,
   statusType,
 } from '@utils/status-type';
-import { addHours } from 'date-fns';
 import { DateHelper } from '@helper/date-helper';
+import { IReqRejectReviseArtist } from '@dto/request/artis-request/IReqRejectReviseArtist';
 
 @Injectable()
 export class CmsArtisService extends BaseService {
@@ -155,23 +155,42 @@ export class CmsArtisService extends BaseService {
       relations: {
         created_by: true,
       },
-      order: { createdAt: 'DESC' },
+      order: { updatedAt: 'DESC' },
       take: this.paginationSize,
       skip: this.paginationSkip,
     });
 
-    const resData: IListArtistResponse[] = data.map((item) => {
-      return {
-        description: item.description,
-        status_enum: item.status,
-        status_string: parseEnumStatusToType(item.status),
-        created_at: this.dateHelper.parseToUtc(item.createdAt),
-        slug: item.slug,
-        name: item.name,
-        created_by: item.created_by.name,
-        image: item?.image,
-      };
-    });
+    const resData: IListArtistResponse[] = data
+      .map((item) => {
+        if (user.role === UserRoleEnum.SUPER_ADMIN) {
+          if (item.status !== StatusEnum.DRAFT) {
+            return {
+              description: item.description,
+              status_enum: item.status,
+              status_string: parseEnumStatusToType(item.status),
+              created_at: this.dateHelper.parseToUtc(item.createdAt),
+              slug: item.slug,
+              name: item.name,
+              created_by: item.created_by.name,
+              image: item?.image,
+            };
+          } else {
+            return null;
+          }
+        } else {
+          return {
+            description: item.description,
+            status_enum: item.status,
+            status_string: parseEnumStatusToType(item.status),
+            created_at: this.dateHelper.parseToUtc(item.createdAt),
+            slug: item.slug,
+            name: item.name,
+            created_by: item.created_by.name,
+            image: item?.image,
+          };
+        }
+      })
+      .filter((element) => element !== null);
     return this.baseResponse.baseResponsePageable<IListArtistResponse[]>(
       resData,
       {
@@ -199,7 +218,7 @@ export class CmsArtisService extends BaseService {
       relations: {
         created_by: true,
       },
-      order: { createdAt: 'DESC' },
+      order: { updatedAt: 'DESC' },
       take: this.paginationSize,
       skip: this.paginationSkip,
     });
@@ -246,6 +265,9 @@ export class CmsArtisService extends BaseService {
         image: findArtist.image ? findArtist.image : null,
         created_date: findArtist.createdAt,
         publish_date: findArtist.publishAt,
+        reject_reason: findArtist?.rejectReason
+          ? findArtist.rejectReason
+          : null,
       });
     }
   }
@@ -372,6 +394,29 @@ export class CmsArtisService extends BaseService {
         return this.baseResponse.BaseResponseWithMessage(
           'Request Revision Success',
         );
+      }
+    }
+  }
+
+  async rejectArtist(body: IReqRejectReviseArtist, slug: string) {
+    const checkArtist = await this.artistRepository.findOne({
+      where: {
+        slug: slug,
+        status: StatusEnum.PENDING,
+      },
+    });
+    if (!checkArtist) {
+      throw new NotFoundException('Artist Not Found');
+    } else {
+      const updateData = await this.artistRepository.update(
+        { id: checkArtist.id },
+        {
+          status: StatusEnum.REJECT,
+          rejectReason: body.reason,
+        },
+      );
+      if (updateData) {
+        return this.baseResponse.BaseResponseWithMessage('Reject Success');
       }
     }
   }

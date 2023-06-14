@@ -5,6 +5,7 @@ export type statusType =
   | 'pending'
   | 'need-revision'
   | 'draft'
+  | 'reject'
   | 'all';
 
 export function parseTypeStatusToEnum(data: statusType): StatusEnum {
@@ -17,6 +18,8 @@ export function parseTypeStatusToEnum(data: statusType): StatusEnum {
       return StatusEnum.PENDING;
     case 'publish':
       return StatusEnum.PUBLISH;
+    case 'reject':
+      return StatusEnum.REJECT;
     default:
       return undefined;
   }
@@ -32,6 +35,8 @@ export function parseEnumStatusToType(data: StatusEnum): statusType {
       return 'pending';
     case StatusEnum.PUBLISH:
       return 'publish';
+    case StatusEnum.REJECT:
+      return 'reject';
     default:
       return undefined;
   }
