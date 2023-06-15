@@ -85,7 +85,7 @@ export class CmsArtisController {
   @UseGuards(SuperAdminGuard)
   @Put('/v1/need-revision/:slug')
   needRevisionArtist(
-    @Body() data: INeedRevisionRequestDto,
+    @Body() data: IReqRejectReviseArtist,
     @Param('slug') slug: string,
   ) {
     return this.artisService.needRevisionArtist(slug, data);

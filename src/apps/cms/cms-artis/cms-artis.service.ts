@@ -309,7 +309,7 @@ export class CmsArtisService extends BaseService {
     }
   }
 
-  async needRevisionArtist(slug: string, data: INeedRevisionRequestDto) {
+  async needRevisionArtist(slug: string, data: IReqRejectReviseArtist) {
     const findData = await this.artistRepository.findOneBy({
       slug: slug,
       status: StatusEnum.PENDING,
@@ -319,7 +319,7 @@ export class CmsArtisService extends BaseService {
     } else {
       const updatedData = await this.artistRepository.update(
         { slug },
-        { status: StatusEnum.NEED_REVISION, notesRevision: data.notes },
+        { status: StatusEnum.NEED_REVISION, notesRevision: data.reason },
       );
       if (updatedData) {
         return this.baseResponse.BaseResponseWithMessage(
