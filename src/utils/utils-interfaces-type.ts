@@ -6,8 +6,8 @@ export interface ILabelValue<T> {
 }
 
 export interface IPaginationQueryParams {
-  size?: string;
-  page?: string;
+  size?: number;
+  page?: number;
   search?: string;
 }
 

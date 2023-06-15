@@ -35,8 +35,8 @@ export default class BaseService {
   }
 
   setPaginationData(query: setDataPageableFunc) {
-    this.paginationPage = parseInt(query.page) || 0;
-    this.paginationSize = parseInt(query.size) || 10;
+    this.paginationPage = query.page || 0;
+    this.paginationSize = query.size || 10;
     this.paginationSkip = this.paginationPage * this.paginationSize;
   }
 
@@ -48,7 +48,7 @@ export default class BaseService {
 }
 
 interface setDataPageableFunc {
-  page: string;
-  size: string;
+  page: number;
+  size: number;
   search?: string;
 }

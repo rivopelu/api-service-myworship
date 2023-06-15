@@ -1,4 +1,5 @@
 import { StatusEnum } from '@enum/status-enum';
+import { UserRoleEnum } from '@enum/user-role-enum';
 
 export type statusType =
   | 'publish'
@@ -7,6 +8,21 @@ export type statusType =
   | 'draft'
   | 'reject'
   | 'all';
+
+export type roleUserType = 'user' | 'admin' | 'super-admin' | 'all';
+
+export function parseTypeRoleToEnum(data: roleUserType) {
+  switch (data) {
+    case 'user':
+      return UserRoleEnum.USER;
+    case 'admin':
+      return UserRoleEnum.ADMIN;
+    case 'super-admin':
+      return UserRoleEnum.SUPER_ADMIN;
+    default:
+      return undefined;
+  }
+}
 
 export function parseTypeStatusToEnum(data: statusType): StatusEnum {
   switch (data) {

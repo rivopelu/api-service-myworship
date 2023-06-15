@@ -24,7 +24,6 @@ import {
 import { IListArtistResponse } from '@dto/response/artist-response/IListArtistResponse';
 import { IDetailArtistResponse } from '@dto/response/artist-response/IDetailArtistResponse';
 import { UserRoleEnum } from '@enum/user-role-enum';
-import { INeedRevisionRequestDto } from '@dto/request/artis-request/INeedRevisionRequestDto';
 import { StatusEnum } from '@enum/status-enum';
 import {
   parseEnumStatusToType,
