@@ -57,4 +57,8 @@ export class UtilsHelper {
   public generateRandomPassword() {
     return faker.internet.password(8);
   }
+
+  public generateSlug(data: string) {
+    return data.split(' ').join('-').toLowerCase();
+  }
 }

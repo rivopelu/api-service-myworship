@@ -3,27 +3,31 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinTable,
 } from 'typeorm';
 import { User } from '@entities/User';
+import { Artist } from '@entities/Artist';
+import { Categories } from '@entities/Categories';
 import { StatusEnum } from '@enum/status-enum';
 
 @Entity()
-export class Artist {
+export class Lyrics {
   @PrimaryGeneratedColumn('increment')
   id: number;
   @Column()
-  name: string;
+  title: string;
   @Column({ unique: true })
   slug: string;
-  @Column({ nullable: true })
-  image: string;
   @Column()
   status: StatusEnum;
-  @Column({ nullable: true, type: 'longtext' })
+  @Column({ type: 'longtext' })
   description: string;
+  @Column({ type: 'longtext' })
+  lyric: string;
   @Column({ nullable: true, name: 'notes_request' })
   notesRequest: string;
   @Column({ nullable: true, name: 'notes_revision' })
@@ -34,8 +38,16 @@ export class Artist {
   updatedAt: Date;
   @Column({ type: 'datetime', name: 'published_at' })
   publishAt: Date;
-  @Column({ nullable: true, name: 'reject_reason' })
-  rejectReason: string;
+
+  @Column({ nullable: true })
+  image: string;
+
+  @ManyToOne(() => Artist, (Artist) => Artist)
+  @JoinColumn({
+    name: 'artist',
+  })
+  artist: Artist;
+
   @ManyToOne(() => User, (Account) => Account)
   @JoinColumn({
     name: 'created_by',
@@ -43,7 +55,11 @@ export class Artist {
   created_by: User;
   @ManyToOne(() => User, (Account) => Account)
   @JoinColumn({
-    name: 'approved_by',
+    name: 'publish_by',
   })
   approved_by: User;
+
+  @ManyToMany(() => Categories, (cat) => cat.lyrics)
+  @JoinTable()
+  categories: Categories[];
 }

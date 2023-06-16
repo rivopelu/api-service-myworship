@@ -20,7 +20,7 @@ export interface setDataPageable {
 export interface IGenerateJwtData {
   email: string;
   name: string;
-  id: string;
+  id: number;
   username: string;
   role: UserRoleEnum;
 }

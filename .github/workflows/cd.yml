@@ -1,0 +1,52 @@
+name : CD
+
+on :
+  push :
+    branches : [ development ]
+env:
+  DATABASE_URL : mysql://rivo:rivopelu123@localhost:3306/sentrum_staging_v2
+  ENV: development
+
+jobs :
+  CHECK_DIR :
+    runs-on : ubuntu-latest
+
+    steps :
+      - name : run a one-line script
+        run : echo RUNNING
+
+      - name : CHECK DIR
+        uses : appleboy/ssh-action@master
+        with :
+          host : ${{ secrets.HOST }}
+          username : ${{ secrets.USERNAME }}
+          key : ${{ secrets.PRIVATE_KEY }}
+          port : 22
+          script : |
+            ls
+            cd app
+            ls
+  DEPLOYMENT :
+    runs-on : ubuntu-latest
+
+    steps :
+      - name : Deploying
+        uses : appleboy/ssh-action@master
+        with :
+          host : ${{ secrets.HOST }}
+          username : ${{ secrets.USERNAME }}
+          key : ${{ secrets.PRIVATE_KEY }}
+          port : 22
+          script : |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh  
+            cd app
+            pm2 stop all
+            git checkout development
+            git pull origin development
+            rm -rf node_modules
+            rm -rf dist
+            npm install
+            npm run build:staging
+            pm2 restart all
+            echo success

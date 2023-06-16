@@ -9,8 +9,8 @@ export const DbConfig = TypeOrmModule.forRoot({
   password: ENV.DB.PW,
   database: ENV.DB.NAME,
   entities: [],
-  synchronize: false,
+  synchronize: true,
   dropSchema: false,
-  logging: true,
+  logging: false,
   autoLoadEntities: true,
 });
