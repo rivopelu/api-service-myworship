@@ -126,4 +126,10 @@ export class CmsArtisController {
   ) {
     return this.artisService.rejectArtist(body, slug);
   }
+
+  @Get('/v1/list-select')
+  @UseGuards(AdminGuard)
+  getListAllArtistSelect() {
+    return this.artisService.getListAllArtistSelect();
+  }
 }

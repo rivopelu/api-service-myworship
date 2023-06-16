@@ -47,4 +47,10 @@ export class CmsCategoriesController {
   deleteCategory(@Param('slug') slug: string) {
     return this.categoriesService.deleteCategory(slug);
   }
+
+  @UseGuards(AdminGuard)
+  @Get('/v1/list-select')
+  getListSelectCategories() {
+    return this.categoriesService.getListCategoriesSelectAll();
+  }
 }

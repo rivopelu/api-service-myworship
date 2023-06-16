@@ -32,6 +32,7 @@ import {
 } from '@utils/status-type';
 import { DateHelper } from '@helper/date-helper';
 import { IReqRejectReviseArtist } from '@dto/request/artis-request/IReqRejectReviseArtist';
+import { IResListArtistSelect } from '@dto/response/artist-response/IResListArtistSelect';
 
 @Injectable()
 export class CmsArtisService extends BaseService {
@@ -417,6 +418,27 @@ export class CmsArtisService extends BaseService {
       if (updateData) {
         return this.baseResponse.BaseResponseWithMessage('Reject Success');
       }
+    }
+  }
+
+  async getListAllArtistSelect() {
+    const data = await this.artistRepository.find({
+      where: {
+        status: StatusEnum.PUBLISH,
+      },
+      order: {
+        name: 'ASC',
+      },
+    });
+    if (data) {
+      const resData: IResListArtistSelect[] = data.map((item) => {
+        return {
+          slug: item.slug,
+          name: item.name,
+          id: item.id,
+        };
+      });
+      return this.baseResponse.BaseResponse<IResListArtistSelect[]>(resData);
     }
   }
 }

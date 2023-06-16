@@ -5,13 +5,11 @@ import {
 } from '@nestjs/common';
 import { ICreateCategoryDto } from '@dto/request/categories-request/ICreateCategoryDto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '@entities/User';
 import { Like, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import BaseService from '@apps/base-service';
 import { Categories } from '@entities/Categories';
 import { UtilsHelper } from '@helper/utils-helper';
-import { getTransientInstances } from '@nestjs/core/injector/helpers/transient-instances';
 import { IPaginationQueryParams } from '@utils/utils-interfaces-type';
 import { IListCategoriesResponse } from '@dto/response/categories-response/IListCategoriesResponse';
 import { ReturnResponsePagination } from '@config/base-response-config';
@@ -108,5 +106,19 @@ export class CmsCategoriesService extends BaseService {
         total_data: count,
       },
     );
+  }
+
+  async getListCategoriesSelectAll() {
+    const data = await this.categoriesRepository.find();
+    if (data) {
+      const res: IListCategoriesResponse[] = data.map((item) => {
+        return {
+          slug: item.slug,
+          name: item.name,
+          id: item.id,
+        };
+      });
+      return this.baseResponse.BaseResponse<IListCategoriesResponse[]>(res);
+    }
   }
 }
