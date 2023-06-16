@@ -27,11 +27,13 @@ import { ReturnResponsePagination } from '@config/base-response-config';
 import { TextHelper } from '@helper/text-helper';
 import { StatusEnum } from '@enum/status-enum';
 import { parseTypeStatusToEnum, statusType } from '@utils/status-type';
+import { DateHelper } from '@helper/date-helper';
 
 @Injectable()
 export class CmsLyricsService extends BaseService {
   private utilsHelper = new UtilsHelper();
   private textHelper = new TextHelper();
+  private dateHelper = new DateHelper();
 
   constructor(
     @InjectRepository(Lyrics)
@@ -144,7 +146,6 @@ export class CmsLyricsService extends BaseService {
       page: param.page,
       size: param.size,
     });
-    console.log(parseTypeStatusToEnum(status));
     const user: IGenerateJwtData = this.req['user'];
     const [data, count] = await this.lyricsRepository.findAndCount({
       where: {
@@ -170,9 +171,10 @@ export class CmsLyricsService extends BaseService {
           slug: item.slug,
           artis_name: item.artist.name,
           artis_slug: item.artist.slug,
+          image: item?.image ? item.image : null,
           status_enum: item.status,
           status_string: this.textHelper.toLowercaseEnum(item.status),
-          created_at: item.createdAt,
+          created_at: this.dateHelper.parseToUtc(item.createdAt),
           publish_by: item?.approved_by?.name,
           created_by: item?.created_by?.name,
           id: item.id,

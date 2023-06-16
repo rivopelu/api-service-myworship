@@ -8,6 +8,7 @@ export interface IResListLyric {
   publish_by?: string;
   status_enum: StatusEnum;
   status_string: string;
+  image?: string;
   artis_name: string;
   artis_slug: string;
   created_by: string;
