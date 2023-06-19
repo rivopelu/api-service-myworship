@@ -8,7 +8,7 @@ import { ICreateLyricsDto } from '@dto/request/lyrics-request/ICreateLyricsDto';
 import { UtilsHelper } from '@helper/utils-helper';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lyrics } from '@entities/Lyrics';
-import { Like, Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 import { User } from '@entities/User';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
@@ -150,7 +150,10 @@ export class CmsLyricsService extends BaseService {
     const user: IGenerateJwtData = this.req['user'];
     const [data, count] = await this.lyricsRepository.findAndCount({
       where: {
-        status: parseTypeStatusToEnum(status),
+        status:
+          status === 'all' && user.role === UserRoleEnum.SUPER_ADMIN
+            ? Not(StatusEnum.DRAFT)
+            : parseTypeStatusToEnum(status),
         created_by:
           user.role === UserRoleEnum.ADMIN ? { id: user.id } : undefined,
         title: param?.search ? Like(`%${param.search}%`) : undefined,
