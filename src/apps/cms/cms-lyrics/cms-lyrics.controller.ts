@@ -48,6 +48,12 @@ export class CmsLyricsController {
     return this.lyricsService.requestCreateLyrics(data);
   }
 
+  @UseGuards(AdminGuard)
+  @Post('/v1/save-draft')
+  saveDraftCreateLyric(@Body() body: ICreateLyricsDto) {
+    return this.lyricsService.saveDraftCreateLyric(body);
+  }
+
   // PUT CONTROLLER
   @UseGuards(AdminGuard)
   @Put('/v1/edit/:slug')

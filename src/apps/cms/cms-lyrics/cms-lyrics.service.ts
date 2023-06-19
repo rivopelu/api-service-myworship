@@ -264,4 +264,50 @@ export class CmsLyricsService extends BaseService {
       }
     }
   }
+
+  async saveDraftCreateLyric(data: ICreateLyricsDto) {
+    const user: IGenerateJwtData = this.req['user'];
+    const getListCategories = await this.categoriesRepository.find();
+
+    const findData = await this.lyricsRepository.findOneBy({
+      slug: this.utilsHelper.generateSlug(data.title),
+    });
+    const findArtist = await this.artistRepository.findOneBy({
+      slug: data.artist_slug,
+    });
+    if (!findArtist) {
+      throw new BadRequestException('Artist Not Found');
+    }
+    const checkCategories = (): Categories[] => {
+      const dataResult: Categories[] = [];
+      data.categories_id.map((item: number) => {
+        const data = getListCategories.find((e) => e.id === item);
+        if (data) {
+          dataResult.push(data);
+        } else {
+          throw new BadRequestException('Categories Id Not Found');
+        }
+      });
+      return dataResult;
+    };
+    if (findData) {
+      throw new BadRequestException('Title Already Exist');
+    } else {
+      const newData = await this.lyricsRepository.save({
+        title: data.title,
+        slug: this.utilsHelper.generateSlug(data.title),
+        description: data.description,
+        lyric: data.lyric,
+        categories: checkCategories(),
+        created_by: { id: user.id },
+        artist: findArtist,
+        notesRequest: data.notes,
+        status: StatusEnum.DRAFT,
+        image: data?.image ? data.image : null,
+      });
+      if (newData) {
+        return this.baseResponse.BaseResponseWithMessage('Success Save Draft');
+      }
+    }
+  }
 }

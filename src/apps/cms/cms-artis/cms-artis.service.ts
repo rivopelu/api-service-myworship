@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@entities/User';
-import { Like, Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 import BaseService from '@apps/base-service';
 import { Artist } from '@entities/Artist';
 import {
@@ -147,7 +147,10 @@ export class CmsArtisService extends BaseService {
 
     const [data, count] = await this.artistRepository.findAndCount({
       where: {
-        status: parseTypeStatusToEnum(status),
+        status:
+          status === 'all' && user.role === UserRoleEnum.SUPER_ADMIN
+            ? Not(StatusEnum.DRAFT)
+            : parseTypeStatusToEnum(status),
         created_by:
           user.role === UserRoleEnum.ADMIN ? { id: user.id } : undefined,
         name: param?.search ? Like(`%${param.search}%`) : undefined,
@@ -160,37 +163,18 @@ export class CmsArtisService extends BaseService {
       skip: this.paginationSkip,
     });
 
-    const resData: IListArtistResponse[] = data
-      .map((item) => {
-        if (user.role === UserRoleEnum.SUPER_ADMIN) {
-          if (item.status !== StatusEnum.DRAFT) {
-            return {
-              description: item.description,
-              status_enum: item.status,
-              status_string: parseEnumStatusToType(item.status),
-              created_at: this.dateHelper.parseToUtc(item.createdAt),
-              slug: item.slug,
-              name: item.name,
-              created_by: item.created_by.name,
-              image: item?.image,
-            };
-          } else {
-            return null;
-          }
-        } else {
-          return {
-            description: item.description,
-            status_enum: item.status,
-            status_string: parseEnumStatusToType(item.status),
-            created_at: this.dateHelper.parseToUtc(item.createdAt),
-            slug: item.slug,
-            name: item.name,
-            created_by: item.created_by.name,
-            image: item?.image,
-          };
-        }
-      })
-      .filter((element) => element !== null);
+    const resData: IListArtistResponse[] = data.map((item) => {
+      return {
+        description: item.description,
+        status_enum: item.status,
+        status_string: parseEnumStatusToType(item.status),
+        created_at: this.dateHelper.parseToUtc(item.createdAt),
+        slug: item.slug,
+        name: item.name,
+        created_by: item.created_by.name,
+        image: item?.image,
+      };
+    });
     return this.baseResponse.baseResponsePageable<IListArtistResponse[]>(
       resData,
       {
