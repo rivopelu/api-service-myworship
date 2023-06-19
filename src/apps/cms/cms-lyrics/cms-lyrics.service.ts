@@ -3,7 +3,6 @@ import {
   Inject,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ICreateLyricsDto } from '@dto/request/lyrics-request/ICreateLyricsDto';
 import { UtilsHelper } from '@helper/utils-helper';
@@ -78,6 +77,8 @@ export class CmsLyricsService extends BaseService {
         status_string: this.textHelper.toLowercaseEnum(item.status),
         artis_name: item.artist.name,
         artis_slug: item.artist.slug,
+        image: item.image,
+        request_notes: item.notesRequest,
         created_at: item.createdAt,
         description: item.description,
         categories: item.categories.map((item) => {

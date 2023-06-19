@@ -1,4 +1,4 @@
-import { StatusEnum } from '@enum/status-enum';
+import { StatusEnum } from "@enum/status-enum";
 
 export interface IDetailLyricResponse {
   id?: number;
@@ -13,6 +13,8 @@ export interface IDetailLyricResponse {
   status_string: string;
   artis_name: string;
   artis_slug: string;
+  image: string;
+  request_notes: string;
   categories: ICategories[];
 }
 
