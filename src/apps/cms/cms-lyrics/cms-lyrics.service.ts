@@ -27,6 +27,7 @@ import { TextHelper } from '@helper/text-helper';
 import { StatusEnum } from '@enum/status-enum';
 import { parseTypeStatusToEnum, statusType } from '@utils/status-type';
 import { DateHelper } from '@helper/date-helper';
+import { IReqRejectRevisionLyric } from '@dto/request/lyrics-request/IReqRejectRevisionLyric';
 
 @Injectable()
 export class CmsLyricsService extends BaseService {
@@ -79,6 +80,7 @@ export class CmsLyricsService extends BaseService {
         artis_slug: item.artist.slug,
         image: item.image,
         request_notes: item.notesRequest,
+        reject_revision_reason: item.notesRevisionReject,
         created_at: item.createdAt,
         description: item.description,
         categories: item.categories.map((item) => {
@@ -310,6 +312,54 @@ export class CmsLyricsService extends BaseService {
       });
       if (newData) {
         return this.baseResponse.BaseResponseWithMessage('Success Save Draft');
+      }
+    }
+  }
+
+  async needRevisionLyric(slug: string, body: IReqRejectRevisionLyric) {
+    const findData = await this.lyricsRepository.findOneBy({
+      slug: slug,
+      status: StatusEnum.PENDING,
+    });
+    if (!findData) {
+      throw new NotFoundException('Lyric Not Found');
+    } else {
+      const updateData = await this.lyricsRepository.update(
+        {
+          slug: slug,
+        },
+        {
+          status: StatusEnum.NEED_REVISION,
+          notesRevisionReject: body.reason,
+        },
+      );
+      if (updateData) {
+        return this.baseResponse.BaseResponseWithMessage(
+          'Need Revision Success',
+        );
+      }
+    }
+  }
+
+  async rejectLyric(slug: string, body: IReqRejectRevisionLyric) {
+    const findData = await this.lyricsRepository.findOneBy({
+      slug: slug,
+      status: StatusEnum.PENDING,
+    });
+    if (!findData) {
+      throw new NotFoundException('Lyric Not Found');
+    } else {
+      const updateData = await this.lyricsRepository.update(
+        {
+          slug: slug,
+        },
+        {
+          status: StatusEnum.REJECT,
+          notesRevisionReject: body.reason,
+        },
+      );
+      if (updateData) {
+        return this.baseResponse.BaseResponseWithMessage('Reject Success');
       }
     }
   }

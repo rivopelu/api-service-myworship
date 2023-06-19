@@ -243,7 +243,7 @@ export class CmsArtisService extends BaseService {
         slug: findArtist.slug,
         request_note: findArtist.notesRequest,
         status: findArtist.status,
-        revision_notes: findArtist.notesRevision,
+        reject_revision_reason: findArtist.notesRevisionReject,
         description: findArtist.description,
         created_by: findArtist.created_by.name,
         image: findArtist.image ? findArtist.image : null,
@@ -303,7 +303,7 @@ export class CmsArtisService extends BaseService {
     } else {
       const updatedData = await this.artistRepository.update(
         { slug },
-        { status: StatusEnum.NEED_REVISION, notesRevision: data.reason },
+        { status: StatusEnum.NEED_REVISION, notesRevisionReject: data.reason },
       );
       if (updatedData) {
         return this.baseResponse.BaseResponseWithMessage(
