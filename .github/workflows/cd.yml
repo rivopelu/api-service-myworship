@@ -4,7 +4,6 @@ on :
   push :
     branches : [ development ]
 env:
-  DATABASE_URL : mysql://rivo:rivopelu123@localhost:3306/sentrum_staging_v2
   ENV: development
 
 jobs :
@@ -40,7 +39,8 @@ jobs :
           script : |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh  
-            cd app
+            cd ~/api-service-myworship
+            ls
             pm2 stop all
             git checkout development
             git pull origin development
