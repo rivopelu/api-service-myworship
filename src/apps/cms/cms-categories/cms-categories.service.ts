@@ -12,7 +12,10 @@ import { Categories } from '@entities/Categories';
 import { UtilsHelper } from '@helper/utils-helper';
 import { IPaginationQueryParams } from '@utils/utils-interfaces-type';
 import { IListCategoriesResponse } from '@dto/response/categories-response/IListCategoriesResponse';
-import { ReturnResponsePagination } from '@config/base-response-config';
+import {
+  ReturnBaseResponse,
+  ReturnResponsePagination,
+} from '@config/base-response-config';
 
 @Injectable()
 export class CmsCategoriesService extends BaseService {
@@ -81,12 +84,8 @@ export class CmsCategoriesService extends BaseService {
 
   async getListCategories(
     param: IPaginationQueryParams,
-  ): ReturnResponsePagination<IListCategoriesResponse[]> {
-    this.setPaginationData({
-      page: param.page,
-      size: param.size,
-    });
-    const [data, count] = await this.categoriesRepository.findAndCount({
+  ): ReturnBaseResponse<IListCategoriesResponse[]> {
+    const data = await this.categoriesRepository.find({
       where: {
         name: param?.search ? Like(`%${param.search}%`) : undefined,
       },
@@ -98,14 +97,7 @@ export class CmsCategoriesService extends BaseService {
         id: item.id,
       };
     });
-    return this.baseResponse.baseResponsePageable<IListCategoriesResponse[]>(
-      resData,
-      {
-        page: this.paginationPage,
-        size: this.paginationSize,
-        total_data: count,
-      },
-    );
+    return this.baseResponse.BaseResponse<IListCategoriesResponse[]>(resData);
   }
 
   async getListCategoriesSelectAll() {
