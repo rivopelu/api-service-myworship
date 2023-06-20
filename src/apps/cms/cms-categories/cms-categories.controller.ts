@@ -28,12 +28,8 @@ export class CmsCategoriesController {
 
   @UseGuards(AdminGuard)
   @Get('v1/list')
-  getListCategories(
-    @Query('size') size: number,
-    @Query('page') page: number,
-    @Query('search') search: string,
-  ) {
-    return this.categoriesService.getListCategories({ size, page, search });
+  getListCategories(@Query('search') search: string) {
+    return this.categoriesService.getListCategories({ search });
   }
 
   @UseGuards(SuperAdminGuard)
@@ -46,5 +42,11 @@ export class CmsCategoriesController {
   @Delete('v1/delete/:slug')
   deleteCategory(@Param('slug') slug: string) {
     return this.categoriesService.deleteCategory(slug);
+  }
+
+  @UseGuards(AdminGuard)
+  @Get('/v1/list-select')
+  getListSelectCategories() {
+    return this.categoriesService.getListCategoriesSelectAll();
   }
 }

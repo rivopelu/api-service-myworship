@@ -15,6 +15,7 @@ import { ICreateLyricsDto } from '@dto/request/lyrics-request/ICreateLyricsDto';
 import { CmsLyricsService } from '@apps/cms/cms-lyrics/cms-lyrics.service';
 import { SuperAdminGuard } from '@guard/super-admin.guard';
 import { statusType } from '@utils/status-type';
+import { IReqRejectRevisionLyric } from '@dto/request/lyrics-request/IReqRejectRevisionLyric';
 
 @ApiTags('CMS LYRICS CONTROLLER')
 @Controller('cms/lyrics')
@@ -48,11 +49,35 @@ export class CmsLyricsController {
     return this.lyricsService.requestCreateLyrics(data);
   }
 
+  @UseGuards(AdminGuard)
+  @Post('/v1/save-draft')
+  saveDraftCreateLyric(@Body() body: ICreateLyricsDto) {
+    return this.lyricsService.saveDraftCreateLyric(body);
+  }
+
   // PUT CONTROLLER
   @UseGuards(AdminGuard)
   @Put('/v1/edit/:slug')
   lyricEdit(@Body() data: ICreateLyricsDto, @Param('slug') slug: string) {
     return this.lyricsService.editLyric(data, slug);
+  }
+
+  @UseGuards(SuperAdminGuard)
+  @Put('/v1/need-revision/:slug')
+  needRevisionLyric(
+    @Body() body: IReqRejectRevisionLyric,
+    @Param('slug') slug: string,
+  ) {
+    return this.lyricsService.needRevisionLyric(slug, body);
+  }
+
+  @UseGuards(SuperAdminGuard)
+  @Put('/v1/reject/:slug')
+  rejectLyric(
+    @Body() body: IReqRejectRevisionLyric,
+    @Param('slug') slug: string,
+  ) {
+    return this.lyricsService.rejectLyric(slug, body);
   }
 
   // PATCH CONTROLLER

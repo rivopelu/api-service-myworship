@@ -3,13 +3,12 @@ import {
   Inject,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ICreateLyricsDto } from '@dto/request/lyrics-request/ICreateLyricsDto';
 import { UtilsHelper } from '@helper/utils-helper';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lyrics } from '@entities/Lyrics';
-import { Like, Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 import { User } from '@entities/User';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
@@ -27,11 +26,14 @@ import { ReturnResponsePagination } from '@config/base-response-config';
 import { TextHelper } from '@helper/text-helper';
 import { StatusEnum } from '@enum/status-enum';
 import { parseTypeStatusToEnum, statusType } from '@utils/status-type';
+import { DateHelper } from '@helper/date-helper';
+import { IReqRejectRevisionLyric } from '@dto/request/lyrics-request/IReqRejectRevisionLyric';
 
 @Injectable()
 export class CmsLyricsService extends BaseService {
   private utilsHelper = new UtilsHelper();
   private textHelper = new TextHelper();
+  private dateHelper = new DateHelper();
 
   constructor(
     @InjectRepository(Lyrics)
@@ -76,6 +78,9 @@ export class CmsLyricsService extends BaseService {
         status_string: this.textHelper.toLowercaseEnum(item.status),
         artis_name: item.artist.name,
         artis_slug: item.artist.slug,
+        image: item.image,
+        request_notes: item.notesRequest,
+        reject_revision_reason: item.notesRevisionReject,
         created_at: item.createdAt,
         description: item.description,
         categories: item.categories.map((item) => {
@@ -144,11 +149,13 @@ export class CmsLyricsService extends BaseService {
       page: param.page,
       size: param.size,
     });
-    console.log(parseTypeStatusToEnum(status));
     const user: IGenerateJwtData = this.req['user'];
     const [data, count] = await this.lyricsRepository.findAndCount({
       where: {
-        status: parseTypeStatusToEnum(status),
+        status:
+          status === 'all' && user.role === UserRoleEnum.SUPER_ADMIN
+            ? Not(StatusEnum.DRAFT)
+            : parseTypeStatusToEnum(status),
         created_by:
           user.role === UserRoleEnum.ADMIN ? { id: user.id } : undefined,
         title: param?.search ? Like(`%${param.search}%`) : undefined,
@@ -170,9 +177,10 @@ export class CmsLyricsService extends BaseService {
           slug: item.slug,
           artis_name: item.artist.name,
           artis_slug: item.artist.slug,
+          image: item?.image ? item.image : null,
           status_enum: item.status,
           status_string: this.textHelper.toLowercaseEnum(item.status),
-          created_at: item.createdAt,
+          created_at: this.dateHelper.parseToUtc(item.createdAt),
           publish_by: item?.approved_by?.name,
           created_by: item?.created_by?.name,
           id: item.id,
@@ -258,6 +266,100 @@ export class CmsLyricsService extends BaseService {
       );
       if (newData) {
         return this.baseResponse.BaseResponseWithMessage('Success Request');
+      }
+    }
+  }
+
+  async saveDraftCreateLyric(data: ICreateLyricsDto) {
+    const user: IGenerateJwtData = this.req['user'];
+    const getListCategories = await this.categoriesRepository.find();
+
+    const findData = await this.lyricsRepository.findOneBy({
+      slug: this.utilsHelper.generateSlug(data.title),
+    });
+    const findArtist = await this.artistRepository.findOneBy({
+      slug: data.artist_slug,
+    });
+    if (!findArtist) {
+      throw new BadRequestException('Artist Not Found');
+    }
+    const checkCategories = (): Categories[] => {
+      const dataResult: Categories[] = [];
+      data.categories_id.map((item: number) => {
+        const data = getListCategories.find((e) => e.id === item);
+        if (data) {
+          dataResult.push(data);
+        } else {
+          throw new BadRequestException('Categories Id Not Found');
+        }
+      });
+      return dataResult;
+    };
+    if (findData) {
+      throw new BadRequestException('Title Already Exist');
+    } else {
+      const newData = await this.lyricsRepository.save({
+        title: data.title,
+        slug: this.utilsHelper.generateSlug(data.title),
+        description: data.description,
+        lyric: data.lyric,
+        categories: checkCategories(),
+        created_by: { id: user.id },
+        artist: findArtist,
+        notesRequest: data.notes,
+        status: StatusEnum.DRAFT,
+        image: data?.image ? data.image : null,
+      });
+      if (newData) {
+        return this.baseResponse.BaseResponseWithMessage('Success Save Draft');
+      }
+    }
+  }
+
+  async needRevisionLyric(slug: string, body: IReqRejectRevisionLyric) {
+    const findData = await this.lyricsRepository.findOneBy({
+      slug: slug,
+      status: StatusEnum.PENDING,
+    });
+    if (!findData) {
+      throw new NotFoundException('Lyric Not Found');
+    } else {
+      const updateData = await this.lyricsRepository.update(
+        {
+          slug: slug,
+        },
+        {
+          status: StatusEnum.NEED_REVISION,
+          notesRevisionReject: body.reason,
+        },
+      );
+      if (updateData) {
+        return this.baseResponse.BaseResponseWithMessage(
+          'Need Revision Success',
+        );
+      }
+    }
+  }
+
+  async rejectLyric(slug: string, body: IReqRejectRevisionLyric) {
+    const findData = await this.lyricsRepository.findOneBy({
+      slug: slug,
+      status: StatusEnum.PENDING,
+    });
+    if (!findData) {
+      throw new NotFoundException('Lyric Not Found');
+    } else {
+      const updateData = await this.lyricsRepository.update(
+        {
+          slug: slug,
+        },
+        {
+          status: StatusEnum.REJECT,
+          notesRevisionReject: body.reason,
+        },
+      );
+      if (updateData) {
+        return this.baseResponse.BaseResponseWithMessage('Reject Success');
       }
     }
   }

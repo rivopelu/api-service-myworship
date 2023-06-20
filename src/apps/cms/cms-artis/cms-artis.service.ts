@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@entities/User';
-import { Like, Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 import BaseService from '@apps/base-service';
 import { Artist } from '@entities/Artist';
 import {
@@ -32,6 +32,7 @@ import {
 } from '@utils/status-type';
 import { DateHelper } from '@helper/date-helper';
 import { IReqRejectReviseArtist } from '@dto/request/artis-request/IReqRejectReviseArtist';
+import { IResListArtistSelect } from '@dto/response/artist-response/IResListArtistSelect';
 
 @Injectable()
 export class CmsArtisService extends BaseService {
@@ -146,7 +147,10 @@ export class CmsArtisService extends BaseService {
 
     const [data, count] = await this.artistRepository.findAndCount({
       where: {
-        status: parseTypeStatusToEnum(status),
+        status:
+          status === 'all' && user.role === UserRoleEnum.SUPER_ADMIN
+            ? Not(StatusEnum.DRAFT)
+            : parseTypeStatusToEnum(status),
         created_by:
           user.role === UserRoleEnum.ADMIN ? { id: user.id } : undefined,
         name: param?.search ? Like(`%${param.search}%`) : undefined,
@@ -159,37 +163,18 @@ export class CmsArtisService extends BaseService {
       skip: this.paginationSkip,
     });
 
-    const resData: IListArtistResponse[] = data
-      .map((item) => {
-        if (user.role === UserRoleEnum.SUPER_ADMIN) {
-          if (item.status !== StatusEnum.DRAFT) {
-            return {
-              description: item.description,
-              status_enum: item.status,
-              status_string: parseEnumStatusToType(item.status),
-              created_at: this.dateHelper.parseToUtc(item.createdAt),
-              slug: item.slug,
-              name: item.name,
-              created_by: item.created_by.name,
-              image: item?.image,
-            };
-          } else {
-            return null;
-          }
-        } else {
-          return {
-            description: item.description,
-            status_enum: item.status,
-            status_string: parseEnumStatusToType(item.status),
-            created_at: this.dateHelper.parseToUtc(item.createdAt),
-            slug: item.slug,
-            name: item.name,
-            created_by: item.created_by.name,
-            image: item?.image,
-          };
-        }
-      })
-      .filter((element) => element !== null);
+    const resData: IListArtistResponse[] = data.map((item) => {
+      return {
+        description: item.description,
+        status_enum: item.status,
+        status_string: parseEnumStatusToType(item.status),
+        created_at: this.dateHelper.parseToUtc(item.createdAt),
+        slug: item.slug,
+        name: item.name,
+        created_by: item.created_by.name,
+        image: item?.image,
+      };
+    });
     return this.baseResponse.baseResponsePageable<IListArtistResponse[]>(
       resData,
       {
@@ -258,7 +243,7 @@ export class CmsArtisService extends BaseService {
         slug: findArtist.slug,
         request_note: findArtist.notesRequest,
         status: findArtist.status,
-        revision_notes: findArtist.notesRevision,
+        reject_revision_reason: findArtist.notesRevisionReject,
         description: findArtist.description,
         created_by: findArtist.created_by.name,
         image: findArtist.image ? findArtist.image : null,
@@ -318,7 +303,7 @@ export class CmsArtisService extends BaseService {
     } else {
       const updatedData = await this.artistRepository.update(
         { slug },
-        { status: StatusEnum.NEED_REVISION, notesRevision: data.reason },
+        { status: StatusEnum.NEED_REVISION, notesRevisionReject: data.reason },
       );
       if (updatedData) {
         return this.baseResponse.BaseResponseWithMessage(
@@ -417,6 +402,27 @@ export class CmsArtisService extends BaseService {
       if (updateData) {
         return this.baseResponse.BaseResponseWithMessage('Reject Success');
       }
+    }
+  }
+
+  async getListAllArtistSelect() {
+    const data = await this.artistRepository.find({
+      where: {
+        status: StatusEnum.PUBLISH,
+      },
+      order: {
+        name: 'ASC',
+      },
+    });
+    if (data) {
+      const resData: IResListArtistSelect[] = data.map((item) => {
+        return {
+          slug: item.slug,
+          name: item.name,
+          id: item.id,
+        };
+      });
+      return this.baseResponse.BaseResponse<IResListArtistSelect[]>(resData);
     }
   }
 }

@@ -26,8 +26,8 @@ export class Artist {
   description: string;
   @Column({ nullable: true, name: 'notes_request' })
   notesRequest: string;
-  @Column({ nullable: true, name: 'notes_revision' })
-  notesRevision: string;
+  @Column({ nullable: true, name: 'notes_revision_reject' })
+  notesRevisionReject: string;
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at' })

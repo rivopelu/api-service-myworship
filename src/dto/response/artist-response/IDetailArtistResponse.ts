@@ -7,7 +7,7 @@ export interface IDetailArtistResponse {
   created_by?: string;
   image: string;
   request_note: string;
-  revision_notes: string;
+  reject_revision_reason: string;
   status: StatusEnum;
   reject_reason: string;
   created_date: Date;

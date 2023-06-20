@@ -9,10 +9,13 @@ export interface IDetailLyricResponse {
   created_by: string;
   created_at: Date;
   publish_by?: string;
+  reject_revision_reason: string;
   status_enum: StatusEnum;
   status_string: string;
   artis_name: string;
   artis_slug: string;
+  image: string;
+  request_notes: string;
   categories: ICategories[];
 }
 

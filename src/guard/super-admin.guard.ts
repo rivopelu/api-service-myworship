@@ -30,7 +30,7 @@ export class SuperAdminGuard implements CanActivate {
         throw new BadRequestException('Your Role Cannot Access This Feature');
       }
     } catch {
-      throw new BadRequestException();
+      throw new BadRequestException('Not Access');
     }
     return true;
   }
