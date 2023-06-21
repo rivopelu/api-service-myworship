@@ -5,7 +5,7 @@ import { AdminGuard } from '../../../guard/admin.guard';
 import { SuperAdminGuard } from '../../../guard/super-admin.guard';
 import { roleUserType } from '../../../utils/status-type';
 
-@ApiTags('CMS USER CONTROLLER')
+@ApiTags('CMS USER CONTROLLER_')
 @Controller('cms/user')
 export class CmsUserController {
   constructor(private userService: CmsUserService) {}
