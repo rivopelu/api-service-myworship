@@ -3,11 +3,11 @@ import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../../app.module';
 import * as request from 'supertest';
 import { HttpStatusCode } from 'axios';
-import { AdminGuard } from '@guard/admin.guard';
-import { UtilsHelper } from '@helper/utils-helper';
-import { SuperAdminGuard } from '@guard/super-admin.guard';
-import IRegisterDto from '@dto/request/auth-request/IRegisterDto';
 import { faker } from '@faker-js/faker';
+import { UtilsHelper } from '../../../helper/utils-helper';
+import { SuperAdminGuard } from '../../../guard/super-admin.guard';
+import IRegisterDto from '../../../dto/request/auth-request/IRegisterDto';
+import { AdminGuard } from '../../../guard/admin.guard';
 
 describe('testing utilities Testing', () => {
   let app: INestApplication;

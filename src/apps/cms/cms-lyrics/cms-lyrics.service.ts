@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 
-import { TextHelper } from 'src/helper/text-helper';
 import BaseService from '../../base-service';
 import { UtilsHelper } from '../../../helper/utils-helper';
 import { DateHelper } from '../../../helper/date-helper';
@@ -29,6 +28,7 @@ import { StatusEnum } from '../../../enum/status-enum';
 import { parseTypeStatusToEnum, statusType } from '../../../utils/status-type';
 import { UserRoleEnum } from '../../../enum/user-role-enum';
 import { IReqRejectRevisionLyric } from '../../../dto/request/lyrics-request/IReqRejectRevisionLyric';
+import { TextHelper } from '../../../helper/text-helper';
 
 @Injectable()
 export class CmsLyricsService extends BaseService {

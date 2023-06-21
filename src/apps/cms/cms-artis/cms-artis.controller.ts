@@ -17,11 +17,11 @@ import {
   ReturnResponsePagination,
   ReturnResponseWithMessage,
 } from '../../../config/base-response-config';
-import { AdminGuard } from 'src/guard/admin.guard';
 import { ICreatedArtistDto } from '../../../dto/request/artis-request/ICreatedArtistDto';
 import { SuperAdminGuard } from '../../../guard/super-admin.guard';
 import { IReqRejectReviseArtist } from '../../../dto/request/artis-request/IReqRejectReviseArtist';
 import { ApiTags } from '@nestjs/swagger';
+import { AdminGuard } from '../../../guard/admin.guard';
 
 @ApiTags('CMS ARTIST CONTROLLER')
 @Controller('cms/artist')
