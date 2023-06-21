@@ -4,30 +4,31 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ICreateLyricsDto } from '@dto/request/lyrics-request/ICreateLyricsDto';
-import { UtilsHelper } from '@helper/utils-helper';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Lyrics } from '@entities/Lyrics';
-import { Like, Not, Repository } from 'typeorm';
-import { User } from '@entities/User';
-import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
+
+import { TextHelper } from 'src/helper/text-helper';
+import BaseService from '../../base-service';
+import { UtilsHelper } from '../../../helper/utils-helper';
+import { DateHelper } from '../../../helper/date-helper';
+import { Lyrics } from '../../../entities/Lyrics';
+import { InjectRepository } from '@nestjs/typeorm';
+import { In, Like, Not, Repository } from 'typeorm';
+import { Artist } from '../../../entities/Artist';
+import { User } from '../../../entities/User';
+import { Categories } from '../../../entities/Categories';
+import { REQUEST } from '@nestjs/core';
 import {
   IGenerateJwtData,
   IPaginationQueryParams,
-} from '@utils/utils-interfaces-type';
-import { Categories } from '@entities/Categories';
-import { Artist } from '@entities/Artist';
-import BaseService from '@apps/base-service';
-import { UserRoleEnum } from '@enum/user-role-enum';
-import { IDetailLyricResponse } from '@dto/response/lyric-response/IDetailLyricResponse';
-import { IResListLyric } from '@dto/response/lyric-response/IResListLyric';
-import { ReturnResponsePagination } from '@config/base-response-config';
-import { TextHelper } from '@helper/text-helper';
-import { StatusEnum } from '@enum/status-enum';
-import { parseTypeStatusToEnum, statusType } from '@utils/status-type';
-import { DateHelper } from '@helper/date-helper';
-import { IReqRejectRevisionLyric } from '@dto/request/lyrics-request/IReqRejectRevisionLyric';
+} from '../../../utils/utils-interfaces-type';
+import { IDetailLyricResponse } from '../../../dto/response/lyric-response/IDetailLyricResponse';
+import { ICreateLyricsDto } from '../../../dto/request/lyrics-request/ICreateLyricsDto';
+import { ReturnResponsePagination } from '../../../config/base-response-config';
+import { IResListLyric } from '../../../dto/response/lyric-response/IResListLyric';
+import { StatusEnum } from '../../../enum/status-enum';
+import { parseTypeStatusToEnum, statusType } from '../../../utils/status-type';
+import { UserRoleEnum } from '../../../enum/user-role-enum';
+import { IReqRejectRevisionLyric } from '../../../dto/request/lyrics-request/IReqRejectRevisionLyric';
 
 @Injectable()
 export class CmsLyricsService extends BaseService {
@@ -218,7 +219,6 @@ export class CmsLyricsService extends BaseService {
 
   async editLyric(data: ICreateLyricsDto, slug: string) {
     const user: IGenerateJwtData = this.req['user'];
-    const getListCategories = await this.categoriesRepository.find();
 
     const findData = await this.lyricsRepository.findOne({
       where: {
@@ -227,6 +227,9 @@ export class CmsLyricsService extends BaseService {
           id: user.id,
         },
       },
+      relations: {
+        categories: true,
+      },
     });
     const findArtist = await this.artistRepository.findOneBy({
       slug: data.artist_slug,
@@ -234,29 +237,26 @@ export class CmsLyricsService extends BaseService {
     if (!findArtist) {
       throw new BadRequestException('Artist Not Found');
     }
-    const checkCategories = (): Categories[] => {
-      const dataResult: Categories[] = [];
-      data.categories_id.map((item: number) => {
-        const data = getListCategories.find((e) => e.id === item);
-        if (data) {
-          dataResult.push(data);
-        } else {
-          throw new BadRequestException('Categories Id Not Found');
-        }
-      });
-      return dataResult;
-    };
+
     if (!findData) {
-      throw new NotFoundException('Lyric Not Found'); // ERROR IN EDIT LIRIK
+      throw new NotFoundException('Lyric Not Found');
     } else {
+      const existingLyric = await this.lyricsRepository.findOne({
+        where: { id: findData.id },
+        relations: ['categories'],
+      });
+
+      existingLyric.categories = await this.categoriesRepository.findBy({
+        id: In(data.categories_id),
+      });
       const newData = await this.lyricsRepository.update(
-        { id: findData.id },
+        { id: findData.id }, // TODO 500 on edit lyric
         {
           title: data.title,
           slug: this.utilsHelper.generateSlug(data.title),
           description: data.description,
           lyric: data.lyric,
-          categories: checkCategories(),
+          categories: existingLyric.categories,
           created_by: { id: user.id },
           artist: findArtist,
           notesRequest: data.notes,

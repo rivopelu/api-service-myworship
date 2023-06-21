@@ -3,19 +3,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ICreateCategoryDto } from '@dto/request/categories-request/ICreateCategoryDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import BaseService from '@apps/base-service';
-import { Categories } from '@entities/Categories';
-import { UtilsHelper } from '@helper/utils-helper';
-import { IPaginationQueryParams } from '@utils/utils-interfaces-type';
-import { IListCategoriesResponse } from '@dto/response/categories-response/IListCategoriesResponse';
-import {
-  ReturnBaseResponse,
-  ReturnResponsePagination,
-} from '@config/base-response-config';
+import BaseService from '../../base-service';
+import { UtilsHelper } from '../../../helper/utils-helper';
+import { Categories } from '../../../entities/Categories';
+import { ICreateCategoryDto } from '../../../dto/request/categories-request/ICreateCategoryDto';
+import { IPaginationQueryParams } from '../../../utils/utils-interfaces-type';
+import { ReturnBaseResponse } from '../../../config/base-response-config';
+import { IListCategoriesResponse } from '../../../dto/response/categories-response/IListCategoriesResponse';
 
 @Injectable()
 export class CmsCategoriesService extends BaseService {

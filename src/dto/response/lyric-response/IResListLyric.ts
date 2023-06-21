@@ -1,4 +1,4 @@
-import { StatusEnum } from '@enum/status-enum';
+import { StatusEnum } from '../../../enum/status-enum';
 
 export interface IResListLyric {
   id?: number;

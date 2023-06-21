@@ -3,12 +3,11 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserRoleEnum } from '@enum/user-role-enum';
-import { Artist } from '@entities/Artist';
+import { UserRoleEnum } from '../enum/user-role-enum';
+import { Artist } from './Artist';
 
 @Entity()
 export class User {

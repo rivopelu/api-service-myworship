@@ -9,10 +9,10 @@ import {
   UpdateDateColumn,
   JoinTable,
 } from 'typeorm';
-import { User } from '@entities/User';
-import { Artist } from '@entities/Artist';
-import { Categories } from '@entities/Categories';
-import { StatusEnum } from '@enum/status-enum';
+import { StatusEnum } from '../enum/status-enum';
+import { Artist } from './Artist';
+import { User } from './User';
+import { Categories } from './Categories';
 
 @Entity()
 export class Lyrics {

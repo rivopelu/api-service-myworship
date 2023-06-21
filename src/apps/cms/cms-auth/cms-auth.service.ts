@@ -4,19 +4,20 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import IRegisterDto from '../../../dto/request/auth-request/IRegisterDto';
+
+import BaseService from '../../base-service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+import ILoginDto from '../../../dto/request/auth-request/ILoginDto';
+import { UtilsHelper } from '../../../helper/utils-helper';
+import { User } from '../../../entities/User';
+import { UserRoleEnum } from '../../../enum/user-role-enum';
+import { ISuccessLoginResponse } from '../../../dto/response/auth-response/ISuccessLoginResponse';
 import {
   ReturnBaseResponse,
   ReturnResponseWithMessage,
-} from '@config/base-response-config';
-import BaseService from '../../base-service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '@entities/User';
-import { Repository } from 'typeorm';
-import { UtilsHelper } from '@helper/utils-helper';
-import { JwtService } from '@nestjs/jwt';
-import ILoginDto from '../../../dto/request/auth-request/ILoginDto';
-import { ISuccessLoginResponse } from '@dto/response/auth-response/ISuccessLoginResponse';
-import { UserRoleEnum } from '@enum/user-role-enum';
+} from '../../../config/base-response-config';
 
 @Injectable()
 export class CmsAuthService extends BaseService {

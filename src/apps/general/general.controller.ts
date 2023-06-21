@@ -5,7 +5,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { GeneralService } from '@apps/general/general.service';
+import { GeneralService } from './general.service';
 
 @Controller('')
 export class GeneralController {

@@ -1,13 +1,15 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { CmsAuthService } from './cms-auth.service';
+import { ApiTags } from '@nestjs/swagger';
+import IRegisterDto from '../../../dto/request/auth-request/IRegisterDto';
 import {
   ReturnBaseResponse,
   ReturnResponseWithMessage,
-} from '@config/base-response-config';
-import { ISuccessLoginResponse } from '@dto/response/auth-response/ISuccessLoginResponse';
-import IRegisterDto from '@dto/request/auth-request/IRegisterDto';
-import ILoginDto, { ILoginGoogle } from '@dto/request/auth-request/ILoginDto';
-import { ApiTags } from '@nestjs/swagger';
+} from '../../../config/base-response-config';
+import ILoginDto, {
+  ILoginGoogle,
+} from '../../../dto/request/auth-request/ILoginDto';
+import { ISuccessLoginResponse } from '../../../dto/response/auth-response/ISuccessLoginResponse';
 
 @ApiTags('CMS AUTH CONTROLLER')
 @Controller('cms/auth')

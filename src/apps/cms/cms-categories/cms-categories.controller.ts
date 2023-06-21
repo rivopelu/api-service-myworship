@@ -9,11 +9,11 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CmsCategoriesService } from '@apps/cms/cms-categories/cms-categories.service';
-import { ICreateCategoryDto } from '@dto/request/categories-request/ICreateCategoryDto';
-import { SuperAdminGuard } from '@guard/super-admin.guard';
-import { AdminGuard } from '@guard/admin.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { CmsCategoriesService } from './cms-categories.service';
+import { ICreateCategoryDto } from '../../../dto/request/categories-request/ICreateCategoryDto';
+import { AdminGuard } from '../../../guard/admin.guard';
+import { SuperAdminGuard } from '../../../guard/super-admin.guard';
 
 @ApiTags('CMS CATEGORIES CONTROLLER')
 @Controller('cms/categories')

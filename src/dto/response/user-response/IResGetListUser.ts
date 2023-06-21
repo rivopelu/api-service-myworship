@@ -1,4 +1,4 @@
-import { UserRoleEnum } from '@enum/user-role-enum';
+import { UserRoleEnum } from '../../../enum/user-role-enum';
 
 export interface IResGetListUser {
   name: string;

@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Lyrics } from '@entities/Lyrics';
+import { Lyrics } from './Lyrics';
 
 @Entity()
 export class Categories {

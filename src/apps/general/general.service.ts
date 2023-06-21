@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import BaseService from '@apps/base-service';
-import { ReturnBaseResponse } from '@config/base-response-config';
-import { IResUploadFile, S3Service } from '@services/s3.service';
+import BaseService from '../base-service';
+import { IResUploadFile, S3Service } from '../../services/s3.service';
+import { ReturnBaseResponse } from '../../config/base-response-config';
 
 @Injectable()
 export class GeneralService extends BaseService {

@@ -1,5 +1,5 @@
-import { StatusEnum } from '@enum/status-enum';
-import { UserRoleEnum } from '@enum/user-role-enum';
+import { UserRoleEnum } from '../enum/user-role-enum';
+import { StatusEnum } from '../enum/status-enum';
 
 export type statusType =
   | 'publish'

@@ -61,4 +61,8 @@ export class UtilsHelper {
   public generateSlug(data: string) {
     return data.split(' ').join('-').toLowerCase();
   }
+
+  public getThisTime() {
+    return new Date().getTime().toString();
+  }
 }
