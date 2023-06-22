@@ -1,7 +1,9 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
@@ -13,7 +15,13 @@ import { User } from '../../../entities/User';
 import ILoginDto, {
   ILoginGoogle,
 } from '../../../dto/request/auth-request/ILoginDto';
+
 import { ISuccessLoginResponse } from '../../../dto/response/auth-response/ISuccessLoginResponse';
+import { ReturnBaseResponse } from '../../../config/base-response-config';
+import { IResGetMeDataUser } from '../../../dto/response/user-response/IResGetMeDataUser';
+import { IGenerateJwtData } from '../../../utils/utils-interfaces-type';
+import { Request } from 'express';
+import { REQUEST } from '@nestjs/core';
 
 @Injectable()
 export class WebAuthService extends BaseService {
@@ -22,7 +30,9 @@ export class WebAuthService extends BaseService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private jwtService?: JwtService,
+    private jwtService: JwtService,
+    @Inject(REQUEST)
+    private req: Request,
   ) {
     super();
   }
@@ -103,6 +113,24 @@ export class WebAuthService extends BaseService {
       } else {
         throw new BadRequestException('Login Failed');
       }
+    }
+  }
+
+  async getMeData(): ReturnBaseResponse<IResGetMeDataUser> {
+    const user: IGenerateJwtData = this.req['user'];
+    const findData = await this.userRepository.findOne({
+      where: { id: user.id },
+    });
+    if (!findData) {
+      throw new UnauthorizedException();
+    } else {
+      const dataRes: IResGetMeDataUser = {
+        name: findData.name,
+        image: findData.image,
+        role: findData.role,
+        username: findData.username,
+      };
+      return this.baseResponse.BaseResponse<IResGetMeDataUser>(dataRes);
     }
   }
 }
