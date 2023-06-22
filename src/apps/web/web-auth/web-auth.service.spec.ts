@@ -8,6 +8,7 @@ import { UtilsHelper } from '../../../helper/utils-helper';
 import { SuperAdminGuard } from '../../../guard/super-admin.guard';
 import IRegisterDto from '../../../dto/request/auth-request/IRegisterDto';
 import { AdminGuard } from '../../../guard/admin.guard';
+import ILoginDto from '../../../dto/request/auth-request/ILoginDto';
 
 describe('testing utilities Testing', () => {
   let app: INestApplication;
@@ -29,8 +30,8 @@ describe('testing utilities Testing', () => {
   afterAll(async () => {
     await app.close();
   });
-  describe(' Categories Testing', () => {
-    it('should success generate categories', async function () {
+  describe(' AUTH TESTING', () => {
+    it('REGISTER SUCCESS', async function () {
       const dataTest: IRegisterDto = {
         name: 'UNIT TEST GENERATE - ' + new Date().getTime(),
         email: new Date().getTime().toString() + faker.internet.email(),
@@ -41,7 +42,19 @@ describe('testing utilities Testing', () => {
         .post('/web/auth/v1/register')
         .send(dataTest)
         .then((res) => {
-          expect(res.status).toEqual(HttpStatusCode.Created);
+          expect(res.status).toEqual(HttpStatusCode.Ok);
+        });
+    });
+    it('LOGIN SUCCESS', async function () {
+      const dataTestLogin: ILoginDto = {
+        password: 'user',
+        email: 'user@gmail.com',
+      };
+      return request(app.getHttpServer())
+        .post('/web/auth/v1/login')
+        .send(dataTestLogin)
+        .then((res) => {
+          expect(res.status).toEqual(HttpStatusCode.Ok);
         });
     });
   });

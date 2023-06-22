@@ -24,6 +24,8 @@ import { Artist } from './entities/Artist';
 import { Categories } from './entities/Categories';
 import { Lyrics } from './entities/Lyrics';
 import { Media } from './entities/Media';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { DefaultPostInterceptor } from './config/DefaultPostInterceptor';
 
 @Module({
   imports: [
@@ -45,6 +47,10 @@ import { Media } from './entities/Media';
     WebAuthController,
   ],
   providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: DefaultPostInterceptor,
+    },
     CmsAuthService,
     CmsArtisService,
     CmsCategoriesService,
