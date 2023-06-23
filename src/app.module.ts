@@ -26,6 +26,8 @@ import { Lyrics } from './entities/Lyrics';
 import { Media } from './entities/Media';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { DefaultPostInterceptor } from './config/DefaultPostInterceptor';
+import { WebLyricsController } from './apps/web/web-lyrics/web-lyrics.controller';
+import { WebLyricsService } from './apps/web/web-lyrics/web-lyrics.service';
 
 @Module({
   imports: [
@@ -45,6 +47,7 @@ import { DefaultPostInterceptor } from './config/DefaultPostInterceptor';
     GeneralController,
     CmsUserController,
     WebAuthController,
+    WebLyricsController,
   ],
   providers: [
     {
@@ -59,6 +62,7 @@ import { DefaultPostInterceptor } from './config/DefaultPostInterceptor';
     S3Service,
     CmsUserService,
     WebAuthService,
+    WebLyricsService,
   ],
 })
 export class AppModule {}
