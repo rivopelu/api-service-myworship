@@ -38,6 +38,7 @@ export class WebLyricsService extends BaseService {
             title: item.title,
             slug: item.slug,
             artist: item.artist.name,
+            image: item.image,
           };
         });
         return this.baseResponse.BaseResponse<IResSearchLyric[]>(dataRes);
