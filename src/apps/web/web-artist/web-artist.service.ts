@@ -6,7 +6,6 @@ import { Artist } from '../../../entities/Artist';
 import { StatusEnum } from '../../../enum/status-enum';
 import { Lyrics } from '../../../entities/Lyrics';
 import { IResDetailArtistWeb } from '../../../dto/response/artist-response/IResDetailArtistWeb';
-import { IPaginationQueryParams } from '../../../utils/utils-interfaces-type';
 
 @Injectable()
 export class WebArtistService extends BaseService {
@@ -36,6 +35,7 @@ export class WebArtistService extends BaseService {
           artist: {
             id: data.id,
           },
+          status: StatusEnum.PUBLISH,
         },
         take: 3,
         order: {
