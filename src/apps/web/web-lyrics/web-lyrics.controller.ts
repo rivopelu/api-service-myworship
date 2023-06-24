@@ -16,4 +16,16 @@ export class WebLyricsController {
   getDetailLyricWebBySlug(@Param('slug') slug: string) {
     return this.lyricService.getDetailLyricBySlugWeb(slug);
   }
+
+  @Get('/v1/list/artist/:slug')
+  getListPaginationLyricByArtistSlug(
+    @Param('slug') slug: string,
+    @Query('size') size: number,
+    @Query('page') page: number,
+  ) {
+    return this.lyricService.getListPaginationByArtistSlug(slug, {
+      size: size,
+      page: page,
+    });
+  }
 }

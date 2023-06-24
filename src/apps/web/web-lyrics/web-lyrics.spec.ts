@@ -42,4 +42,24 @@ describe('WEB LYRIC TEST', () => {
         expect(res.body.response_data.slug).toEqual(slug);
       });
   });
+  describe('Get Pagination ', () => {
+    it('should Get Pagination data by artist slug', function () {
+      const artistSlug = 'unit-test';
+      return request(app.getHttpServer())
+        .get(`/web/lyrics/v1/list/artist/${artistSlug}`)
+        .then((res) => {
+          expect(res.status).toEqual(HttpStatusCode.Ok);
+          expect(res.body.pagination_data.page).toEqual(0);
+        });
+    });
+    it('should Get Pagination data by artist slug', function () {
+      const artistSlug = 'unit-test';
+      return request(app.getHttpServer())
+        .get(`/web/lyrics/v1/list/artist/${artistSlug}?size=2`)
+        .then((res) => {
+          expect(res.status).toEqual(HttpStatusCode.Ok);
+          expect(res.body.response_data.length).toEqual(2);
+        });
+    });
+  });
 });

@@ -6,7 +6,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GeneralService } from './general.service';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('GENERAL CONTROLLER')
 @Controller('')
 export class GeneralController {
   constructor(private generalService: GeneralService) {}

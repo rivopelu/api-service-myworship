@@ -12,6 +12,9 @@ import { StatusEnum } from '../../../enum/status-enum';
 import { IResDetailLyricWeb } from '../../../dto/response/lyric-response/IResDetailLyricWeb';
 import { Artist } from '../../../entities/Artist';
 import { DateHelper } from '../../../helper/date-helper';
+import { IPaginationQueryParams } from '../../../utils/utils-interfaces-type';
+import { IResLyricPaginationByArtistWeb } from '../../../dto/response/lyric-response/IResLyricPaginationByArtistWeb';
+import { ReturnResponsePagination } from '../../../config/base-response-config';
 
 @Injectable()
 export class WebLyricsService extends BaseService {
@@ -168,6 +171,58 @@ export class WebLyricsService extends BaseService {
         }),
       };
       return this.baseResponse.BaseResponse<IResDetailLyricWeb>(dataRes);
+    }
+  }
+
+  public async getListPaginationByArtistSlug(
+    artistSlug: string,
+    param: IPaginationQueryParams,
+  ): ReturnResponsePagination<IResLyricPaginationByArtistWeb[]> {
+    this.setPaginationData({
+      page: param.page,
+      size: param.size ?? 9,
+    });
+    const artist = await this.artistRepository.findOne({
+      where: {
+        slug: artistSlug,
+      },
+    });
+    if (!artist) {
+      throw new NotFoundException('Artist Not Found');
+    } else {
+      const [data, count] = await this.lyricsRepository.findAndCount({
+        where: {
+          status: StatusEnum.PUBLISH,
+          artist: {
+            id: artist.id,
+          },
+        },
+        relations: {
+          artist: true,
+        },
+        order: { publishAt: 'DESC' },
+        take: this.paginationSize,
+        skip: this.paginationSkip,
+      });
+      if (data) {
+        const listData: IResLyricPaginationByArtistWeb[] = data.map((item) => {
+          return {
+            slug: item.slug,
+            title: item.title,
+            image: item.image,
+            artist_name: item.artist.name,
+            artist_slug: item.artist.slug,
+            view: parseInt(item.view.toString()),
+          };
+        });
+        return this.baseResponse.baseResponsePageable<
+          IResLyricPaginationByArtistWeb[]
+        >(listData, {
+          page: this.paginationPage,
+          size: this.paginationSize,
+          total_data: count,
+        });
+      }
     }
   }
 }

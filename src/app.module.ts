@@ -28,6 +28,8 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { DefaultPostInterceptor } from './config/DefaultPostInterceptor';
 import { WebLyricsController } from './apps/web/web-lyrics/web-lyrics.controller';
 import { WebLyricsService } from './apps/web/web-lyrics/web-lyrics.service';
+import { WebArtistController } from './apps/web/web-artist/web-artist.controller';
+import { WebArtistService } from './apps/web/web-artist/web-artist.service';
 
 @Module({
   imports: [
@@ -48,6 +50,7 @@ import { WebLyricsService } from './apps/web/web-lyrics/web-lyrics.service';
     CmsUserController,
     WebAuthController,
     WebLyricsController,
+    WebArtistController,
   ],
   providers: [
     {
@@ -63,6 +66,7 @@ import { WebLyricsService } from './apps/web/web-lyrics/web-lyrics.service';
     CmsUserService,
     WebAuthService,
     WebLyricsService,
+    WebArtistService,
   ],
 })
 export class AppModule {}
