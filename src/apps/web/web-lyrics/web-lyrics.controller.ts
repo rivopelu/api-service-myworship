@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { WebLyricsService } from './web-lyrics.service';
 
@@ -10,5 +10,10 @@ export class WebLyricsController {
   @Get('/v1/search-lyric')
   getLyricSearchByName(@Query('search') title: string) {
     return this.lyricService.getSearchLyricByName(title);
+  }
+
+  @Get('v1/detail/:slug')
+  getDetailLyricWebBySlug(@Param('slug') slug: string) {
+    return this.lyricService.getDetailLyricBySlugWeb(slug);
   }
 }

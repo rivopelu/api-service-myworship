@@ -208,6 +208,7 @@ export class CmsLyricsService extends BaseService {
         { id: findData.id },
         {
           status: StatusEnum.PUBLISH,
+          publishAt: new Date(),
           approved_by: { id: user.id },
         },
       );
