@@ -43,6 +43,7 @@ export class WebLyricsService extends BaseService {
       if (lyricData) {
         const dataRes: IResSearchLyric[] = lyricData.map((item) => {
           return {
+            artist_slug: item.artist.slug,
             title: item.title,
             slug: item.slug,
             artist: item.artist.name,
