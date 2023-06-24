@@ -102,6 +102,9 @@ export class WebLyricsService extends BaseService {
           artist: true,
         },
         take: 5,
+        order: {
+          publishAt: 'DESC',
+        },
       });
 
       const dataRes: IResDetailLyricWeb = {
