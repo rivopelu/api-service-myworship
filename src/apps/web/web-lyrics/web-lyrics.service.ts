@@ -97,9 +97,6 @@ export class WebLyricsService extends BaseService {
       const getOtherSong = await this.lyricsRepository.find({
         where: {
           status: StatusEnum.PUBLISH,
-          artist: {
-            id: data.artist.id,
-          },
         },
         relations: {
           artist: true,
