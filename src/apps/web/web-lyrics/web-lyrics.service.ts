@@ -99,7 +99,7 @@ export class WebLyricsService extends BaseService {
           id: data.id,
         },
         {
-          view: data.view + 1,
+          view: parseInt(data.view.toString()) + 1,
         },
       );
       const getOtherSong = await this.lyricsRepository.find({
