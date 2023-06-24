@@ -10,9 +10,19 @@ export interface IResDetailLyricWeb {
   total_lyric_artist: number;
   description: string;
   lyric: string;
+  other_artist_lyrics: OtherLyric[];
+  other_lyrics: OtherLyric[];
 }
 
 interface ICategories {
   slug: string;
   name: string;
+}
+
+interface OtherLyric {
+  title: string;
+  image: string;
+  slug: string;
+  artist_name: string;
+  artist_slug: string;
 }

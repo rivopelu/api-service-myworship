@@ -84,6 +84,29 @@ export class WebLyricsService extends BaseService {
         },
         status: StatusEnum.PUBLISH,
       });
+
+      const getOtherSongFromArtist = await this.lyricsRepository.find({
+        where: {
+          status: StatusEnum.PUBLISH,
+          artist: {
+            id: data.artist.id,
+          },
+        },
+        take: 5,
+      });
+      const getOtherSong = await this.lyricsRepository.find({
+        where: {
+          status: StatusEnum.PUBLISH,
+          artist: {
+            id: data.artist.id,
+          },
+        },
+        relations: {
+          artist: true,
+        },
+        take: 5,
+      });
+
       const dataRes: IResDetailLyricWeb = {
         title: data.title,
         slug: data.slug,
@@ -99,6 +122,24 @@ export class WebLyricsService extends BaseService {
           return {
             slug: item.slug,
             name: item.name,
+          };
+        }),
+        other_lyrics: getOtherSong.map((item) => {
+          return {
+            slug: item.slug,
+            title: item.title,
+            image: item.image,
+            artist_name: item.artist.name,
+            artist_slug: item.artist.slug,
+          };
+        }),
+        other_artist_lyrics: getOtherSongFromArtist.map((item) => {
+          return {
+            slug: item.slug,
+            title: item.title,
+            image: item.image,
+            artist_name: data.artist.name,
+            artist_slug: data.artist.slug,
           };
         }),
       };
