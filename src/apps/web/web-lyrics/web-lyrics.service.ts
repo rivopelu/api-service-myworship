@@ -119,7 +119,7 @@ export class WebLyricsService extends BaseService {
         title: data.title,
         slug: data.slug,
         image: data.image,
-        view: data.view,
+        view: parseInt(data.view.toString()),
         total_lyric_artist: getCountDataArtist,
         artist_image: data.artist.image,
         published_date: this.dateHelper.parseToUtc(data.publishAt),
