@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   CanActivate,
   ExecutionContext,
   Injectable,
@@ -8,10 +7,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { ENV } from '../constants/ENV';
-import { UserRoleEnum } from '../enum/user-role-enum';
 
 @Injectable()
-export class SuperAdminGuard implements CanActivate {
+export class UserGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -24,13 +22,11 @@ export class SuperAdminGuard implements CanActivate {
       request['user'] = await this.jwtService.verifyAsync(token, {
         secret: ENV.JWT_SECRET,
       });
-      if (request['user'].role === UserRoleEnum.SUPER_ADMIN) {
+      if (request['user']) {
         return request['user'];
-      } else {
-        throw new BadRequestException('Your Role Cannot Access This Feature');
       }
     } catch {
-      throw new BadRequestException('Not Access');
+      throw new UnauthorizedException();
     }
     return true;
   }

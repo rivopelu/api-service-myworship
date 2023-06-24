@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '@entities/User';
-import { StatusEnum } from '@enum/status-enum';
+import { StatusEnum } from '../enum/status-enum';
+import { User } from './User';
 
 @Entity()
 export class Artist {
@@ -34,6 +34,8 @@ export class Artist {
   updatedAt: Date;
   @Column({ type: 'datetime', name: 'published_at' })
   publishAt: Date;
+  @Column({ type: 'bigint', default: 0 })
+  view: number;
   @Column({ nullable: true, name: 'reject_reason' })
   rejectReason: string;
   @ManyToOne(() => User, (Account) => Account)

@@ -9,10 +9,10 @@ import {
   UpdateDateColumn,
   JoinTable,
 } from 'typeorm';
-import { User } from '@entities/User';
-import { Artist } from '@entities/Artist';
-import { Categories } from '@entities/Categories';
-import { StatusEnum } from '@enum/status-enum';
+import { StatusEnum } from '../enum/status-enum';
+import { Artist } from './Artist';
+import { User } from './User';
+import { Categories } from './Categories';
 
 @Entity()
 export class Lyrics {
@@ -38,6 +38,8 @@ export class Lyrics {
   updatedAt: Date;
   @Column({ type: 'datetime', name: 'published_at' })
   publishAt: Date;
+  @Column({ type: 'bigint', default: 0 })
+  view: number;
 
   @Column({ nullable: true })
   image: string;

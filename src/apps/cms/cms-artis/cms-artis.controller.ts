@@ -10,19 +10,18 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { AdminGuard } from '@guard/admin.guard';
-import { CmsArtisService } from '@apps/cms/cms-artis/cms-artis.service';
+import { CmsArtisService } from './cms-artis.service';
+import { statusType } from '../../../utils/status-type';
+import { IListArtistResponse } from '../../../dto/response/artist-response/IListArtistResponse';
 import {
   ReturnResponsePagination,
   ReturnResponseWithMessage,
-} from '@config/base-response-config';
-import { ICreatedArtistDto } from '@dto/request/artis-request/ICreatedArtistDto';
-import { IListArtistResponse } from '@dto/response/artist-response/IListArtistResponse';
-import { SuperAdminGuard } from '@guard/super-admin.guard';
-import { INeedRevisionRequestDto } from '@dto/request/artis-request/INeedRevisionRequestDto';
+} from '../../../config/base-response-config';
+import { ICreatedArtistDto } from '../../../dto/request/artis-request/ICreatedArtistDto';
+import { SuperAdminGuard } from '../../../guard/super-admin.guard';
+import { IReqRejectReviseArtist } from '../../../dto/request/artis-request/IReqRejectReviseArtist';
 import { ApiTags } from '@nestjs/swagger';
-import { statusType } from '@utils/status-type';
-import { IReqRejectReviseArtist } from '@dto/request/artis-request/IReqRejectReviseArtist';
+import { AdminGuard } from '../../../guard/admin.guard';
 
 @ApiTags('CMS ARTIST CONTROLLER')
 @Controller('cms/artist')

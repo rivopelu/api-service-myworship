@@ -1,5 +1,5 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ENV } from '@constants/ENV';
+import { ENV } from '../constants/ENV';
 
 export const DbConfig = TypeOrmModule.forRoot({
   type: 'mysql',

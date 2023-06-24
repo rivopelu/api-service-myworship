@@ -5,34 +5,34 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '@entities/User';
 import { Like, Not, Repository } from 'typeorm';
-import BaseService from '@apps/base-service';
-import { Artist } from '@entities/Artist';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import BaseService from '../../base-service';
+import { DateHelper } from '../../../helper/date-helper';
+import { Artist } from '../../../entities/Artist';
+import { User } from '../../../entities/User';
+import { ICreatedArtistDto } from '../../../dto/request/artis-request/ICreatedArtistDto';
 import {
   ReturnBaseResponse,
   ReturnResponsePagination,
   ReturnResponseWithMessage,
-} from '@config/base-response-config';
-import { ICreatedArtistDto } from '@dto/request/artis-request/ICreatedArtistDto';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
+} from '../../../config/base-response-config';
 import {
   IGenerateJwtData,
   IPaginationQueryParams,
-} from '@utils/utils-interfaces-type';
-import { IListArtistResponse } from '@dto/response/artist-response/IListArtistResponse';
-import { IDetailArtistResponse } from '@dto/response/artist-response/IDetailArtistResponse';
-import { UserRoleEnum } from '@enum/user-role-enum';
-import { StatusEnum } from '@enum/status-enum';
+} from '../../../utils/utils-interfaces-type';
+import { IResListArtistSelect } from '../../../dto/response/artist-response/IResListArtistSelect';
+import { StatusEnum } from '../../../enum/status-enum';
+import { IReqRejectReviseArtist } from '../../../dto/request/artis-request/IReqRejectReviseArtist';
+import { IListArtistResponse } from '../../../dto/response/artist-response/IListArtistResponse';
 import {
   parseEnumStatusToType,
   parseTypeStatusToEnum,
   statusType,
-} from '@utils/status-type';
-import { DateHelper } from '@helper/date-helper';
-import { IReqRejectReviseArtist } from '@dto/request/artis-request/IReqRejectReviseArtist';
-import { IResListArtistSelect } from '@dto/response/artist-response/IResListArtistSelect';
+} from '../../../utils/status-type';
+import { UserRoleEnum } from '../../../enum/user-role-enum';
+import { IDetailArtistResponse } from '../../../dto/response/artist-response/IDetailArtistResponse';
 
 @Injectable()
 export class CmsArtisService extends BaseService {

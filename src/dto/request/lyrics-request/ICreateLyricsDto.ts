@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { Artist } from '@entities/Artist';
+import { Artist } from '../../../entities/Artist';
 
 export class ICreateLyricsDto {
   @ApiProperty({ name: 'title' })

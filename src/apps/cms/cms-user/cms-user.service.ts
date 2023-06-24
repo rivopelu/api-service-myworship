@@ -1,21 +1,21 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '@entities/User';
 import { Like, Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import BaseService from '@apps/base-service';
-import {
-  IGenerateJwtData,
-  IPaginationQueryParams,
-} from '@utils/utils-interfaces-type';
+import { User } from '../../../entities/User';
+import { IResGetMeDataUser } from '../../../dto/response/user-response/IResGetMeDataUser';
 import {
   ReturnBaseResponse,
   ReturnResponsePagination,
-} from '@config/base-response-config';
-import { IResGetMeDataUser } from '@dto/response/user-response/IResGetMeDataUser';
-import { parseTypeRoleToEnum, roleUserType } from '@utils/status-type';
-import { IResGetListUser } from '@dto/response/user-response/IResGetListUser';
+} from '../../../config/base-response-config';
+import {
+  IGenerateJwtData,
+  IPaginationQueryParams,
+} from '../../../utils/utils-interfaces-type';
+import { parseTypeRoleToEnum, roleUserType } from '../../../utils/status-type';
+import { IResGetListUser } from '../../../dto/response/user-response/IResGetListUser';
+import BaseService from '../../base-service';
 
 @Injectable()
 export class CmsUserService extends BaseService {

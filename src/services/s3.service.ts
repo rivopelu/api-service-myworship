@@ -1,16 +1,16 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Media } from '@entities/Media';
 import { S3 } from 'aws-sdk';
 
 import { v4 as uuidv4 } from 'uuid';
-import { ENV } from '@constants/ENV';
-import BaseService from '@apps/base-service';
 import {
   ReturnBaseResponse,
   ReturnResponseWithMessage,
-} from '@config/base-response-config';
+} from '../config/base-response-config';
+import { Media } from '../entities/Media';
+import { ENV } from '../constants/ENV';
+import BaseService from '../apps/base-service';
 
 @Injectable()
 export class S3Service extends BaseService {

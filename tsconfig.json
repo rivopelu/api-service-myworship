@@ -17,20 +17,6 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {
-      "@test/*" : ["./test/*"],
-      "@config/*": ["./src/config/*"],
-      "@constants/*": ["./src/constants/*"],
-      "@dto/*": ["./src/dto/*"],
-      "@entities/*": ["./src/entities/*"],
-      "@enum/*": ["./src/enum/*"],
-      "@model/*": ["./src/model/*"],
-      "@mail/*": ["./src/mail/*"],
-      "@apps/*": ["./src/apps/*"],
-      "@helper/*": ["./src/helper/*"],
-      "@services/*": ["./src/services/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@guard/*": ["./src/guard/*"],
-    }
+
   }
 }

@@ -10,12 +10,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AdminGuard } from '@guard/admin.guard';
-import { ICreateLyricsDto } from '@dto/request/lyrics-request/ICreateLyricsDto';
-import { CmsLyricsService } from '@apps/cms/cms-lyrics/cms-lyrics.service';
-import { SuperAdminGuard } from '@guard/super-admin.guard';
-import { statusType } from '@utils/status-type';
-import { IReqRejectRevisionLyric } from '@dto/request/lyrics-request/IReqRejectRevisionLyric';
+import { CmsLyricsService } from './cms-lyrics.service';
+import { AdminGuard } from '../../../guard/admin.guard';
+import { statusType } from '../../../utils/status-type';
+import { ICreateLyricsDto } from '../../../dto/request/lyrics-request/ICreateLyricsDto';
+import { SuperAdminGuard } from '../../../guard/super-admin.guard';
+import { IReqRejectRevisionLyric } from '../../../dto/request/lyrics-request/IReqRejectRevisionLyric';
 
 @ApiTags('CMS LYRICS CONTROLLER')
 @Controller('cms/lyrics')

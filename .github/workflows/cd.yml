@@ -1,46 +1,58 @@
-name : CD
+name: CD
 
-on :
-  push :
-    branches : [ development ]
+on:
+  push:
+    branches: [ development ]
 env:
-  DATABASE_URL : mysql://rivo:rivopelu123@localhost:3306/sentrum_staging_v2
   ENV: development
 
-jobs :
-  CHECK_DIR :
-    runs-on : ubuntu-latest
+jobs:
+  TEST :
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - run: npm i
+      - run: npm run build
+      - run: npm test
+  CHECK_DIR:
+    runs-on: ubuntu-latest
 
-    steps :
-      - name : run a one-line script
-        run : echo RUNNING
+    steps:
+      - name: run a one-line script
+        run: echo RUNNING
 
-      - name : CHECK DIR
-        uses : appleboy/ssh-action@master
-        with :
-          host : ${{ secrets.HOST }}
-          username : ${{ secrets.USERNAME }}
-          key : ${{ secrets.PRIVATE_KEY }}
-          port : 22
-          script : |
+      - name: CHECK DIR
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: 22
+          script: |
             ls
-            cd app
+            cd ~/api-service-myworship
             ls
-  DEPLOYMENT :
-    runs-on : ubuntu-latest
+  DEPLOYMENT:
+    runs-on: ubuntu-latest
 
-    steps :
-      - name : Deploying
-        uses : appleboy/ssh-action@master
-        with :
-          host : ${{ secrets.HOST }}
-          username : ${{ secrets.USERNAME }}
-          key : ${{ secrets.PRIVATE_KEY }}
-          port : 22
-          script : |
+    steps:
+      - name: Deploying
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: 22
+          script: |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh  
-            cd app
+            cd ~/api-service-myworship
+            ls
             pm2 stop all
             git checkout development
             git pull origin development
