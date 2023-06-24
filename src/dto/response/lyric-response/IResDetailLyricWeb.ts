@@ -5,6 +5,7 @@ export interface IResDetailLyricWeb {
   artist_name: string;
   artist_slug: string;
   artist_image: string;
+  view: number;
   categories: ICategories[];
   published_date: Date;
   total_lyric_artist: number;

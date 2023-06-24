@@ -38,6 +38,8 @@ export class Lyrics {
   updatedAt: Date;
   @Column({ type: 'datetime', name: 'published_at' })
   publishAt: Date;
+  @Column({ type: 'bigint', default: 0 })
+  view: number;
 
   @Column({ nullable: true })
   image: string;

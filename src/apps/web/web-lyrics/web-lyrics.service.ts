@@ -94,6 +94,14 @@ export class WebLyricsService extends BaseService {
         },
         take: 5,
       });
+      await this.lyricsRepository.update(
+        {
+          id: data.id,
+        },
+        {
+          view: data.view + 1,
+        },
+      );
       const getOtherSong = await this.lyricsRepository.find({
         where: {
           status: StatusEnum.PUBLISH,
@@ -111,6 +119,7 @@ export class WebLyricsService extends BaseService {
         title: data.title,
         slug: data.slug,
         image: data.image,
+        view: data.view,
         total_lyric_artist: getCountDataArtist,
         artist_image: data.artist.image,
         published_date: this.dateHelper.parseToUtc(data.publishAt),
