@@ -30,10 +30,23 @@ export class WebLyricsService extends BaseService {
     if (!title) {
       return this.baseResponse.BaseResponse<IResSearchLyric[]>([]);
     } else {
-      const lyricData = await this.lyricsRepository.find({
+      const lyrics = await this.lyricsRepository.find({
         where: {
           status: StatusEnum.PUBLISH,
           title: Like(`%${title}%`),
+        },
+        relations: {
+          artist: true,
+        },
+        order: {
+          title: 'DESC',
+        },
+        take: 10,
+      });
+
+      const artist = await this.lyricsRepository.find({
+        where: {
+          status: StatusEnum.PUBLISH,
           artist: {
             name: Like(`%${title}%`),
           },
@@ -46,7 +59,9 @@ export class WebLyricsService extends BaseService {
         },
         take: 10,
       });
-      if (lyricData) {
+
+      if (lyrics && artist) {
+        const lyricData = [...lyrics, ...artist];
         const dataRes: IResSearchLyric[] = lyricData.map((item) => {
           return {
             artist_slug: item.artist.slug,
