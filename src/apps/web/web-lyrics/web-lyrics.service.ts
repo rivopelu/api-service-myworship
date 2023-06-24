@@ -11,9 +11,12 @@ import { IResSearchLyric } from '../../../dto/response/lyric-response/IResSearch
 import { StatusEnum } from '../../../enum/status-enum';
 import { IResDetailLyricWeb } from '../../../dto/response/lyric-response/IResDetailLyricWeb';
 import { Artist } from '../../../entities/Artist';
+import { DateHelper } from '../../../helper/date-helper';
 
 @Injectable()
 export class WebLyricsService extends BaseService {
+  private dateHelper = new DateHelper();
+
   constructor(
     @InjectRepository(Lyrics)
     private lyricsRepository: Repository<Lyrics>,
@@ -83,7 +86,7 @@ export class WebLyricsService extends BaseService {
         slug: data.slug,
         image: data.image,
         total_lyric_artist: getCountDataArtist,
-        published_date: data.publishAt,
+        published_date: this.dateHelper.parseToUtc(data.publishAt),
         artist_slug: data.artist.slug,
         artist_name: data.artist.name,
         description: data.description,
