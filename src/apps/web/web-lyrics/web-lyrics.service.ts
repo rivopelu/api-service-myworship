@@ -34,6 +34,9 @@ export class WebLyricsService extends BaseService {
         where: {
           status: StatusEnum.PUBLISH,
           title: Like(`%${title}%`),
+          artist: {
+            name: Like(`%${title}%`),
+          },
         },
         relations: {
           artist: true,
