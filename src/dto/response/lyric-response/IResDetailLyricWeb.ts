@@ -26,4 +26,5 @@ interface OtherLyric {
   slug: string;
   artist_name: string;
   artist_slug: string;
+  view: number;
 }

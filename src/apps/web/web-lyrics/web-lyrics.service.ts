@@ -129,7 +129,7 @@ export class WebLyricsService extends BaseService {
         },
         take: 5,
         order: {
-          publishAt: 'DESC',
+          view: 'DESC',
         },
       });
 
@@ -158,6 +158,7 @@ export class WebLyricsService extends BaseService {
             image: item.image,
             artist_name: item.artist.name,
             artist_slug: item.artist.slug,
+            view: parseInt(item.view.toString()),
           };
         }),
         other_artist_lyrics: getOtherSongFromArtist.map((item) => {
@@ -167,6 +168,7 @@ export class WebLyricsService extends BaseService {
             image: item.image,
             artist_name: data.artist.name,
             artist_slug: data.artist.slug,
+            view: parseInt(item.view.toString()),
           };
         }),
       };
