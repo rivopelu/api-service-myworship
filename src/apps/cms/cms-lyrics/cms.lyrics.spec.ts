@@ -223,4 +223,38 @@ describe('CMS LYRIC TEST', () => {
       }
     }
   });
+  it('should create and need pending', async function () {
+    const data: ICreateLyricsDto = {
+      title: `TEST-PENDING - ${faker.person.firstName()} - ${new Date().getTime()}`,
+      image: getRandomImageUrlTest(),
+      categories_id: getRandomCategoriesTesting(),
+      notes: faker.lorem.text(),
+      artist_slug: getRandomArtistTest(),
+      description: faker.lorem.text(),
+      lyric: faker.lorem.lines(10),
+    };
+    const resCreate = await request(app.getHttpServer())
+      .post('/cms/lyrics/v1/new')
+      .send(data)
+      .set(token.auth, token.token)
+      .then((res) => {
+        expect(res.status).toEqual(HttpStatusCode.Ok);
+        return true;
+      });
+    if (resCreate) {
+      const slug = utilsHelper.generateSlug(data.title);
+      return request(app.getHttpServer())
+        .get('/cms/lyrics/v1/detail/' + slug)
+        .set(token.auth, token.token)
+        .then((res) => {
+          expect(res.status).toEqual(HttpStatusCode.Ok);
+          expect(res.body.response_data.slug).toEqual(slug);
+          expect(res.body.response_data.status_enum).toEqual(
+            StatusEnum.PENDING,
+          );
+          const data: IDetailLyricResponse = res.body.response_data;
+          return data;
+        });
+    }
+  });
 });

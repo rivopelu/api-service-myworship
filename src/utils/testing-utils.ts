@@ -71,6 +71,13 @@ export function getRandomImageUrlTest() {
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgcTqvVgNYbdKLGmVCEQg60gx01CiRabTRXvXYFOGqEQ&s',
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCivPqUgkmBNSgylqOGxxpbevjhA1Hyu8LVQZmNvE4kQ&s',
     'https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnJEFgF1hjiSZD9q5nuWNp-gep_njnZv2eeG7BNO6x-w&s',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7g62G22Wjgyz0BMTN6oOiq9vcgZzm9uyB6ama3lOhNw&s',
+    'https://cdn.pixabay.com/photo/2016/07/07/16/46/dice-1502706_1280.jpg',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6qAP-zTwbaY4-AXPfLEGV0tN1XGTpSwrgBpPr9qLRtwAmma4DoSBJ2XuIajYbT0HfAP8&usqp=CAU',
+    'https://www.pacegallery.com/media/images/heroimage.width-2000.webp',
+    'https://lh3.googleusercontent.com/hwau7OVWx96XaME5KpRuJ0I_MscrerK6SbRH1UwYHYaxIDQQtn7RZK02LDSfBzCreidFgDsJeXyqDct6EZiH6vsV=w640-h400-e365-rj-sc0x00ffffff',
+    'https://www.shutterstock.com/image-photo/random-act-kindness-260nw-731074915.jpg',
   ];
   return getRandomStringFromArray(dataArray);
 }
