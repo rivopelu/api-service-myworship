@@ -20,4 +20,6 @@ export class ICreateLyricsDto {
   @ApiProperty({ name: 'categories id' })
   categories_id: number[];
   image?: string;
+  @IsNotEmpty()
+  youtube_url: string;
 }

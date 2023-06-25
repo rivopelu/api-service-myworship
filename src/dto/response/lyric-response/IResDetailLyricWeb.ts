@@ -27,4 +27,5 @@ interface OtherLyric {
   artist_name: string;
   artist_slug: string;
   view: number;
+  youtube_url: string;
 }

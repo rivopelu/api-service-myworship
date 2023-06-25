@@ -16,6 +16,7 @@ export interface IDetailLyricResponse {
   artis_slug: string;
   image: string;
   request_notes: string;
+  youtube_url: string;
   categories: ICategories[];
 }
 
