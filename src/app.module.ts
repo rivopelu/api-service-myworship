@@ -30,6 +30,7 @@ import { WebLyricsController } from './apps/web/web-lyrics/web-lyrics.controller
 import { WebLyricsService } from './apps/web/web-lyrics/web-lyrics.service';
 import { WebArtistController } from './apps/web/web-artist/web-artist.controller';
 import { WebArtistService } from './apps/web/web-artist/web-artist.service';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { WebArtistService } from './apps/web/web-artist/web-artist.service';
       secret: ENV.JWT_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
+    MailModule,
   ],
   controllers: [
     AppController,

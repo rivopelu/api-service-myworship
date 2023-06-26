@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { WebAuthService } from './web-auth.service';
 import IRegisterDto from '../../../dto/request/auth-request/IRegisterDto';
 import ILoginDto, {
@@ -36,5 +44,10 @@ export class WebAuthController {
   @UseGuards(UserGuard)
   getMeData() {
     return this.authService.getMeData();
+  }
+
+  @Patch('v1/verify-email')
+  verifyEmail(@Query('token') token: string) {
+    return this.authService.verifyEmail(token);
   }
 }

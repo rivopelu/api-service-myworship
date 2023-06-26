@@ -24,12 +24,14 @@ import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
 import { faker } from '@faker-js/faker';
 import { UserRoleEnum } from '../../../enum/user-role-enum';
+import { MailService } from '../../../mail/mail.service';
 
 @Injectable()
 export class WebAuthService extends BaseService {
   private utilsHelper: UtilsHelper = new UtilsHelper(this.jwtService);
 
   constructor(
+    private mailService: MailService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
@@ -37,6 +39,14 @@ export class WebAuthService extends BaseService {
     private req: Request,
   ) {
     super();
+  }
+
+  private async sendVerificationEmail(user: User) {
+    return await this.mailService
+      .sendVerification(user.email, user.name, user.emailVerificationToken)
+      .then(() => {
+        return true;
+      });
   }
 
   async register(body: IRegisterDto) {
@@ -56,14 +66,27 @@ export class WebAuthService extends BaseService {
         body.password,
       );
       if (hashPassword) {
+        const generateTokenVerified = this.utilsHelper.generateJwt({
+          email: faker.internet.email(),
+          role: UserRoleEnum.USER,
+          name: faker.person.fullName() + new Date().getTime(),
+          id: new Date().getTime(),
+          username: faker.person.fullName() + new Date().getTime(),
+        });
         const newDataUser = await this.userRepository.save({
           username: body.username,
           email: body.email,
           name: body.name,
           password: hashPassword,
+          emailVerificationToken: generateTokenVerified,
         });
         if (newDataUser) {
-          return this.baseResponse.BaseResponseWithMessage('SUCCESS');
+          const sendVerification = await this.sendVerificationEmail(
+            newDataUser,
+          );
+          if (sendVerification) {
+            return this.baseResponse.BaseResponseWithMessage('SUCCESS');
+          }
         }
       }
     }
@@ -162,6 +185,13 @@ export class WebAuthService extends BaseService {
             new Date().getTime();
         }
         if (hashPw) {
+          const generateTokenVerified = this.utilsHelper.generateJwt({
+            email: faker.internet.email(),
+            role: UserRoleEnum.USER,
+            name: faker.person.fullName() + new Date().getTime(),
+            id: new Date().getTime(),
+            username: faker.person.fullName() + new Date().getTime(),
+          });
           const newDataUser = await this.userRepository.save({
             username: data.username,
             name: dataResGoogle.data.name,
@@ -169,13 +199,41 @@ export class WebAuthService extends BaseService {
             image: dataResGoogle.data.picture,
             email: dataResGoogle.data.email,
             password: hashPw,
+            emailVerificationToken: generateTokenVerified,
           });
           if (newDataUser) {
-            return this.baseResponse.BaseResponseWithMessage(
-              'Register Success',
-            );
+            const sendEmail = await this.sendVerificationEmail(newDataUser);
+            if (sendEmail) {
+              return this.baseResponse.BaseResponseWithMessage(
+                'Register Success',
+              );
+            }
           }
         }
+      }
+    }
+  }
+
+  async verifyEmail(token: string) {
+    const findUser = await this.userRepository.findOne({
+      where: {
+        emailVerificationToken: token,
+      },
+    });
+    if (!findUser) {
+      throw new NotFoundException('User Not Found');
+    } else {
+      const updateUser = await this.userRepository.update(
+        { id: findUser.id },
+        {
+          emailVerificationToken: null,
+          isVerifiedEmail: true,
+        },
+      );
+      if (updateUser) {
+        return this.baseResponse.BaseResponseWithMessage(
+          'Verification Success',
+        );
       }
     }
   }
