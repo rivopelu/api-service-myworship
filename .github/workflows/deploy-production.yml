@@ -42,9 +42,9 @@ jobs:
       - name: Deploying
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ secrets.HOST_PRODUCTION }}
+          username: ${{ secrets.USERNAME_PRODUCTION }}
+          key: ${{ secrets.PRIVATE_KEY_PRODUCTION }}
           port: 22
           script: |
             export NVM_DIR=~/.nvm
