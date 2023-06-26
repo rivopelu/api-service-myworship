@@ -51,7 +51,7 @@ export class WebArtistService extends BaseService {
         );
 
         const dataRes: IResDetailArtistWeb = {
-          name: data.slug,
+          name: data.name,
           image: data.image,
           slug: data.slug,
           description: data.description,
