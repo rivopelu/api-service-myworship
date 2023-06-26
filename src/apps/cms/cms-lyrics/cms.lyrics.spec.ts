@@ -8,6 +8,7 @@ import {
   getRandomArtistTest,
   getRandomCategoriesTesting,
   getRandomImageUrlTest,
+  getRandomYoutubeUrl,
   ISetToken,
   loginCmsTest,
   setTokenTest,
@@ -55,6 +56,7 @@ describe('CMS LYRIC TEST', () => {
       notes: faker.lorem.text(),
       artist_slug: getRandomArtistTest(),
       description: faker.lorem.text(),
+      youtube_url: getRandomYoutubeUrl(),
       lyric: faker.lorem.lines(10),
     };
     const resCreate = await request(app.getHttpServer())
@@ -112,6 +114,7 @@ describe('CMS LYRIC TEST', () => {
       artist_slug: getRandomArtistTest(),
       description: faker.lorem.text(),
       lyric: faker.lorem.lines(10),
+      youtube_url: getRandomYoutubeUrl(),
     };
     const resCreate = await request(app.getHttpServer())
       .post('/cms/lyrics/v1/new')
@@ -165,6 +168,7 @@ describe('CMS LYRIC TEST', () => {
   });
   it('should create and need revision', async function () {
     const data: ICreateLyricsDto = {
+      youtube_url: getRandomYoutubeUrl(),
       title: `TEST-REVISION - ${faker.person.firstName()} - ${new Date().getTime()}`,
       image: getRandomImageUrlTest(),
       categories_id: getRandomCategoriesTesting(),
@@ -228,6 +232,7 @@ describe('CMS LYRIC TEST', () => {
       title: `TEST-PENDING - ${faker.person.firstName()} - ${new Date().getTime()}`,
       image: getRandomImageUrlTest(),
       categories_id: getRandomCategoriesTesting(),
+      youtube_url: getRandomYoutubeUrl(),
       notes: faker.lorem.text(),
       artist_slug: getRandomArtistTest(),
       description: faker.lorem.text(),

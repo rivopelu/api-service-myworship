@@ -136,6 +136,7 @@ export class WebLyricsService extends BaseService {
       const dataRes: IResDetailLyricWeb = {
         title: data.title,
         slug: data.slug,
+        youtube_url: data.youtubeUrl,
         image: data.image,
         view: parseInt(data.view.toString()),
         total_lyric_artist: getCountDataArtist,
@@ -153,6 +154,7 @@ export class WebLyricsService extends BaseService {
         }),
         other_lyrics: getOtherSong.map((item) => {
           return {
+            youtube_url: item.youtubeUrl,
             slug: item.slug,
             title: item.title,
             image: item.image,
@@ -164,6 +166,7 @@ export class WebLyricsService extends BaseService {
         other_artist_lyrics: getOtherSongFromArtist.map((item) => {
           return {
             slug: item.slug,
+            youtube_url: item.youtubeUrl,
             title: item.title,
             image: item.image,
             artist_name: data.artist.name,

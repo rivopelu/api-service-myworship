@@ -5,6 +5,7 @@ export interface IResDetailLyricWeb {
   artist_name: string;
   artist_slug: string;
   artist_image: string;
+  youtube_url: string;
   view: number;
   categories: ICategories[];
   published_date: Date;
@@ -27,4 +28,5 @@ interface OtherLyric {
   artist_name: string;
   artist_slug: string;
   view: number;
+  youtube_url: string;
 }

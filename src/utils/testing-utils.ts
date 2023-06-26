@@ -23,6 +23,7 @@ export function getRandomCategoriesTesting(): number[] {
   function getRandomLength(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
+
   function getRandomArray<T>(array: T[], length: number): T[] {
     const randomArray: T[] = [];
 
@@ -57,6 +58,7 @@ export function getRandomArtistTest() {
   const dataArray = ['unit-test', 'unit-test-2'];
   return getRandomStringFromArray(dataArray);
 }
+
 export function getRandomImageUrlTest() {
   function getRandomStringFromArray(array: string[]): string {
     const randomIndex = Math.floor(Math.random() * array.length);
@@ -78,6 +80,22 @@ export function getRandomImageUrlTest() {
     'https://www.pacegallery.com/media/images/heroimage.width-2000.webp',
     'https://lh3.googleusercontent.com/hwau7OVWx96XaME5KpRuJ0I_MscrerK6SbRH1UwYHYaxIDQQtn7RZK02LDSfBzCreidFgDsJeXyqDct6EZiH6vsV=w640-h400-e365-rj-sc0x00ffffff',
     'https://www.shutterstock.com/image-photo/random-act-kindness-260nw-731074915.jpg',
+  ];
+  return getRandomStringFromArray(dataArray);
+}
+
+export function getRandomYoutubeUrl() {
+  function getRandomStringFromArray(array: string[]): string {
+    const randomIndex = Math.floor(Math.random() * array.length);
+    return array[randomIndex];
+  }
+
+  const dataArray = [
+    'https://www.youtube.com/watch?v=XU7nrf2HXjw&list=RDVQo4hyWfBQ4&index=16',
+    'https://www.youtube.com/watch?v=Y0ORhLyJWuc&list=RDVQo4hyWfBQ4&index=17',
+    'https://www.youtube.com/watch?v=3or3dp3qNQU&list=RDVQo4hyWfBQ4&index=18&pp=8AUB',
+    'https://www.youtube.com/watch?v=e-ORhEE9VVg&list=RDVQo4hyWfBQ4&index=8',
+    'https://www.youtube.com/watch?v=Z7yNvMzz2zg&list=RDVQo4hyWfBQ4&index=19',
   ];
   return getRandomStringFromArray(dataArray);
 }

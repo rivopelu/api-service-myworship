@@ -71,6 +71,7 @@ export class CmsLyricsService extends BaseService {
       const item = getDetail;
       const dataDetail: IDetailLyricResponse = {
         title: item.title,
+        youtube_url: item.youtubeUrl,
         slug: item.slug,
         created_by: item?.created_by?.name,
         lyric: item.lyric,
@@ -128,6 +129,7 @@ export class CmsLyricsService extends BaseService {
         slug: this.utilsHelper.generateSlug(data.title),
         description: data.description,
         lyric: data.lyric,
+        youtubeUrl: data.youtube_url,
         categories: checkCategories(),
         created_by: { id: user.id },
         artist: findArtist,
@@ -257,6 +259,7 @@ export class CmsLyricsService extends BaseService {
           slug: this.utilsHelper.generateSlug(data.title),
           description: data.description,
           lyric: data.lyric,
+          youtubeUrl: data.youtube_url,
           categories: existingLyric.categories,
           created_by: { id: user.id },
           artist: findArtist,

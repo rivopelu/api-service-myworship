@@ -40,7 +40,8 @@ export class Lyrics {
   publishAt: Date;
   @Column({ type: 'bigint', default: 0 })
   view: number;
-
+  @Column({ name: 'youtube_url' })
+  youtubeUrl: string;
   @Column({ nullable: true })
   image: string;
 
