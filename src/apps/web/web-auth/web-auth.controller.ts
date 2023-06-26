@@ -22,6 +22,11 @@ export class WebAuthController {
     return this.authService.login(body);
   }
 
+  @Post('/v1/register-google')
+  registerWithGoogle(@Body() body: ILoginGoogle) {
+    return this.authService.registerWithGoogle(body.token);
+  }
+
   @Post('/v1/login-google')
   loginWebGoogle(@Body() body: ILoginGoogle) {
     return this.authService.loginGoogle(body);

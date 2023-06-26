@@ -22,6 +22,8 @@ import { IResGetMeDataUser } from '../../../dto/response/user-response/IResGetMe
 import { IGenerateJwtData } from '../../../utils/utils-interfaces-type';
 import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
+import { faker } from '@faker-js/faker';
+import { UserRoleEnum } from '../../../enum/user-role-enum';
 
 @Injectable()
 export class WebAuthService extends BaseService {
@@ -131,6 +133,50 @@ export class WebAuthService extends BaseService {
         username: findData.username,
       };
       return this.baseResponse.BaseResponse<IResGetMeDataUser>(dataRes);
+    }
+  }
+
+  async registerWithGoogle(token: string) {
+    const data = new User();
+    const dataResGoogle = await this.utilsHelper.getDataFromGoogle(token);
+    if (dataResGoogle.data) {
+      const findEmail = await this.userRepository.findOneBy({
+        email: dataResGoogle.data.email,
+      });
+      const findUsername = await this.userRepository.findOne({
+        where: {
+          username: this.utilsHelper.generateSlug(dataResGoogle.data.name),
+        },
+      });
+      data.username = this.utilsHelper.generateSlug(dataResGoogle.data.name);
+      if (findEmail) {
+        throw new BadRequestException('Email Already Exist');
+      } else {
+        const hashPw = await this.utilsHelper.encryptPassword(
+          faker.internet.password(),
+        );
+        if (findUsername) {
+          data.username =
+            this.utilsHelper.generateSlug(dataResGoogle.data.name) +
+            '-' +
+            new Date().getTime();
+        }
+        if (hashPw) {
+          const newDataUser = await this.userRepository.save({
+            username: data.username,
+            name: dataResGoogle.data.name,
+            role: UserRoleEnum.USER,
+            image: dataResGoogle.data.picture,
+            email: dataResGoogle.data.email,
+            password: hashPw,
+          });
+          if (newDataUser) {
+            return this.baseResponse.BaseResponseWithMessage(
+              'Register Success',
+            );
+          }
+        }
+      }
     }
   }
 }
