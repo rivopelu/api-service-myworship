@@ -45,6 +45,7 @@ describe('CMS LYRIC TEST', () => {
       .set(token.auth, token.token)
       .then((res) => {
         expect(res.status).toEqual(HttpStatusCode.Ok);
+
         expect(res.body.response_data.slug).toEqual(slug);
       });
   });
