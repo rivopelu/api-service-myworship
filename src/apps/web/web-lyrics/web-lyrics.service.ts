@@ -136,6 +136,7 @@ export class WebLyricsService extends BaseService {
       const dataRes: IResDetailLyricWeb = {
         title: data.title,
         slug: data.slug,
+        youtube_url: data.youtubeUrl,
         image: data.image,
         view: parseInt(data.view.toString()),
         total_lyric_artist: getCountDataArtist,
