@@ -152,6 +152,7 @@ export class WebAuthService extends BaseService {
     } else {
       const dataRes: IResGetMeDataUser = {
         name: findData.name,
+        email: findData.email,
         image: findData.image,
         role: findData.role,
         username: findData.username,
@@ -217,6 +218,9 @@ export class WebAuthService extends BaseService {
   }
 
   async verifyEmail(token: string) {
+    if (!token) {
+      throw new BadRequestException('Token Required');
+    }
     const findUser = await this.userRepository.findOne({
       where: {
         emailVerificationToken: token,
@@ -236,6 +240,48 @@ export class WebAuthService extends BaseService {
         return this.baseResponse.BaseResponseWithMessage(
           'Verification Success',
         );
+      }
+    }
+  }
+
+  async resendVerificationEmail(email: string) {
+    if (!email) {
+      throw new BadRequestException('Email Required');
+    }
+    const findData = await this.userRepository.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (!findData) {
+      throw new NotFoundException('User Not Found');
+    } else {
+      if (findData.isVerifiedEmail) {
+        throw new BadRequestException('Your email has been verified');
+      } else {
+        const generateTokenVerified = this.utilsHelper.generateJwt({
+          email: faker.internet.email(),
+          role: UserRoleEnum.USER,
+          name: faker.person.fullName() + new Date().getTime(),
+          id: new Date().getTime(),
+          username: faker.person.fullName() + new Date().getTime(),
+        });
+        const updateData = await this.userRepository.update(
+          {
+            id: findData.id,
+          },
+          {
+            emailVerificationToken: generateTokenVerified,
+          },
+        );
+        if (updateData) {
+          const sendEMail = await this.sendVerificationEmail(findData);
+          if (sendEMail) {
+            return this.baseResponse.BaseResponseWithMessage(
+              'Resend Verification Success',
+            );
+          }
+        }
       }
     }
   }

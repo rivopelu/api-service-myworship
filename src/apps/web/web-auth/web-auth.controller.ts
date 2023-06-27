@@ -50,4 +50,9 @@ export class WebAuthController {
   verifyEmail(@Query('token') token: string) {
     return this.authService.verifyEmail(token);
   }
+
+  @Patch('v1/resend-verification-email')
+  resendVerificationEmail(@Query('email') email: string) {
+    return this.authService.resendVerificationEmail(email);
+  }
 }
