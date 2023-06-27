@@ -275,11 +275,18 @@ export class WebAuthService extends BaseService {
           },
         );
         if (updateData) {
-          const sendEMail = await this.sendVerificationEmail(findData);
-          if (sendEMail) {
-            return this.baseResponse.BaseResponseWithMessage(
-              'Resend Verification Success',
-            );
+          const getAgainUser = await this.userRepository.findOne({
+            where: {
+              id: findData.id,
+            },
+          });
+          if (getAgainUser) {
+            const sendEMail = await this.sendVerificationEmail(getAgainUser);
+            if (sendEMail) {
+              return this.baseResponse.BaseResponseWithMessage(
+                'Resend Verification Success',
+              );
+            }
           }
         }
       }
