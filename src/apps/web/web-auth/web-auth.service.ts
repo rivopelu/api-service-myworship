@@ -155,6 +155,7 @@ export class WebAuthService extends BaseService {
         image: findData.image,
         role: findData.role,
         username: findData.username,
+        is_verified_email: findData.isVerifiedEmail,
       };
       return this.baseResponse.BaseResponse<IResGetMeDataUser>(dataRes);
     }
