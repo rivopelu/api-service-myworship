@@ -1,7 +1,6 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { MailService } from './mail/mail.service';
-import { join } from 'path';
 
 @ApiTags('PING')
 @Controller()

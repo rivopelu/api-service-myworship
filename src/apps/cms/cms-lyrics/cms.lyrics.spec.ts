@@ -69,7 +69,8 @@ describe('CMS LYRIC TEST', () => {
         return true;
       });
     if (resCreate) {
-      const slug = utilsHelper.generateSlug(data.title);
+      const slug =
+        utilsHelper.generateSlug(data.title) + '-' + data.artist_slug;
       const getDetail = await request(app.getHttpServer())
         .get('/cms/lyrics/v1/detail/' + slug)
         .set(token.auth, token.token)
@@ -126,7 +127,8 @@ describe('CMS LYRIC TEST', () => {
         return true;
       });
     if (resCreate) {
-      const slug = utilsHelper.generateSlug(data.title);
+      const slug =
+        utilsHelper.generateSlug(data.title) + '-' + data.artist_slug;
       const getDetail = await request(app.getHttpServer())
         .get('/cms/lyrics/v1/detail/' + slug)
         .set(token.auth, token.token)
@@ -187,7 +189,8 @@ describe('CMS LYRIC TEST', () => {
         return true;
       });
     if (resCreate) {
-      const slug = utilsHelper.generateSlug(data.title);
+      const slug =
+        utilsHelper.generateSlug(data.title) + '-' + data.artist_slug;
       const getDetail = await request(app.getHttpServer())
         .get('/cms/lyrics/v1/detail/' + slug)
         .set(token.auth, token.token)
@@ -248,7 +251,8 @@ describe('CMS LYRIC TEST', () => {
         return true;
       });
     if (resCreate) {
-      const slug = utilsHelper.generateSlug(data.title);
+      const slug =
+        utilsHelper.generateSlug(data.title) + '-' + data.artist_slug;
       return request(app.getHttpServer())
         .get('/cms/lyrics/v1/detail/' + slug)
         .set(token.auth, token.token)
