@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -22,12 +23,16 @@ import { IResGetMeDataUser } from '../../../dto/response/user-response/IResGetMe
 import { IGenerateJwtData } from '../../../utils/utils-interfaces-type';
 import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
+import { faker } from '@faker-js/faker';
+import { UserRoleEnum } from '../../../enum/user-role-enum';
+import { MailService } from '../../../mail/mail.service';
 
 @Injectable()
 export class WebAuthService extends BaseService {
   private utilsHelper: UtilsHelper = new UtilsHelper(this.jwtService);
 
   constructor(
+    private mailService: MailService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
@@ -35,6 +40,14 @@ export class WebAuthService extends BaseService {
     private req: Request,
   ) {
     super();
+  }
+
+  private async sendVerificationEmail(user: User) {
+    return await this.mailService
+      .sendVerification(user.email, user.name, user.emailVerificationToken)
+      .then(() => {
+        return true;
+      });
   }
 
   async register(body: IRegisterDto) {
@@ -54,14 +67,27 @@ export class WebAuthService extends BaseService {
         body.password,
       );
       if (hashPassword) {
+        const generateTokenVerified = this.utilsHelper.generateJwt({
+          email: faker.internet.email(),
+          role: UserRoleEnum.USER,
+          name: faker.person.fullName() + new Date().getTime(),
+          id: new Date().getTime(),
+          username: faker.person.fullName() + new Date().getTime(),
+        });
         const newDataUser = await this.userRepository.save({
           username: body.username,
           email: body.email,
           name: body.name,
           password: hashPassword,
+          emailVerificationToken: generateTokenVerified,
         });
         if (newDataUser) {
-          return this.baseResponse.BaseResponseWithMessage('SUCCESS');
+          const sendVerification = await this.sendVerificationEmail(
+            newDataUser,
+          );
+          if (sendVerification) {
+            return this.baseResponse.BaseResponseWithMessage('SUCCESS');
+          }
         }
       }
     }
@@ -126,11 +152,144 @@ export class WebAuthService extends BaseService {
     } else {
       const dataRes: IResGetMeDataUser = {
         name: findData.name,
+        email: findData.email,
         image: findData.image,
         role: findData.role,
         username: findData.username,
+        is_verified_email: findData.isVerifiedEmail,
       };
       return this.baseResponse.BaseResponse<IResGetMeDataUser>(dataRes);
+    }
+  }
+
+  async registerWithGoogle(token: string) {
+    const data = new User();
+    const dataResGoogle = await this.utilsHelper.getDataFromGoogle(token);
+    if (dataResGoogle.data) {
+      const findEmail = await this.userRepository.findOneBy({
+        email: dataResGoogle.data.email,
+      });
+      const findUsername = await this.userRepository.findOne({
+        where: {
+          username: this.utilsHelper.generateSlug(dataResGoogle.data.name),
+        },
+      });
+      data.username = this.utilsHelper.generateSlug(dataResGoogle.data.name);
+      if (findEmail) {
+        throw new BadRequestException('Email Already Exist');
+      } else {
+        const hashPw = await this.utilsHelper.encryptPassword(
+          faker.internet.password(),
+        );
+        if (findUsername) {
+          data.username =
+            this.utilsHelper.generateSlug(dataResGoogle.data.name) +
+            '-' +
+            new Date().getTime();
+        }
+        if (hashPw) {
+          const generateTokenVerified = this.utilsHelper.generateJwt({
+            email: faker.internet.email(),
+            role: UserRoleEnum.USER,
+            name: faker.person.fullName() + new Date().getTime(),
+            id: new Date().getTime(),
+            username: faker.person.fullName() + new Date().getTime(),
+          });
+          const newDataUser = await this.userRepository.save({
+            username: data.username,
+            name: dataResGoogle.data.name,
+            role: UserRoleEnum.USER,
+            image: dataResGoogle.data.picture,
+            email: dataResGoogle.data.email,
+            password: hashPw,
+            emailVerificationToken: generateTokenVerified,
+          });
+          if (newDataUser) {
+            const sendEmail = await this.sendVerificationEmail(newDataUser);
+            if (sendEmail) {
+              return this.baseResponse.BaseResponseWithMessage(
+                'Register Success',
+              );
+            }
+          }
+        }
+      }
+    }
+  }
+
+  async verifyEmail(token: string) {
+    if (!token) {
+      throw new BadRequestException('Token Required');
+    }
+    const findUser = await this.userRepository.findOne({
+      where: {
+        emailVerificationToken: token,
+      },
+    });
+    if (!findUser) {
+      throw new NotFoundException('User Not Found');
+    } else {
+      const updateUser = await this.userRepository.update(
+        { id: findUser.id },
+        {
+          emailVerificationToken: null,
+          isVerifiedEmail: true,
+        },
+      );
+      if (updateUser) {
+        return this.baseResponse.BaseResponseWithMessage(
+          'Verification Success',
+        );
+      }
+    }
+  }
+
+  async resendVerificationEmail(email: string) {
+    if (!email) {
+      throw new BadRequestException('Email Required');
+    }
+    const findData = await this.userRepository.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (!findData) {
+      throw new NotFoundException('User Not Found');
+    } else {
+      if (findData.isVerifiedEmail) {
+        throw new BadRequestException('Your email has been verified');
+      } else {
+        const generateTokenVerified = this.utilsHelper.generateJwt({
+          email: faker.internet.email(),
+          role: UserRoleEnum.USER,
+          name: faker.person.fullName() + new Date().getTime(),
+          id: new Date().getTime(),
+          username: faker.person.fullName() + new Date().getTime(),
+        });
+        const updateData = await this.userRepository.update(
+          {
+            id: findData.id,
+          },
+          {
+            emailVerificationToken: generateTokenVerified,
+          },
+        );
+        if (updateData) {
+          const getAgainUser = await this.userRepository.findOne({
+            where: {
+              id: findData.id,
+            },
+          });
+          if (getAgainUser) {
+            const sendEMail = await this.sendVerificationEmail(getAgainUser);
+            if (sendEMail) {
+              return this.baseResponse.BaseResponseWithMessage(
+                'Resend Verification Success',
+              );
+            }
+          }
+        }
+      }
     }
   }
 }

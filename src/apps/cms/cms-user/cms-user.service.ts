@@ -37,9 +37,11 @@ export class CmsUserService extends BaseService {
     } else {
       const dataRes: IResGetMeDataUser = {
         name: findData.name,
+        email: findData.email,
         image: findData.image,
         role: findData.role,
         username: findData.username,
+        is_verified_email: findData.isVerifiedEmail,
       };
       return this.baseResponse.BaseResponse<IResGetMeDataUser>(dataRes);
     }

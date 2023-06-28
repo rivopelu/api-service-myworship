@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { WebAuthService } from './web-auth.service';
 import IRegisterDto from '../../../dto/request/auth-request/IRegisterDto';
 import ILoginDto, {
@@ -22,6 +30,11 @@ export class WebAuthController {
     return this.authService.login(body);
   }
 
+  @Post('/v1/register-google')
+  registerWithGoogle(@Body() body: ILoginGoogle) {
+    return this.authService.registerWithGoogle(body.token);
+  }
+
   @Post('/v1/login-google')
   loginWebGoogle(@Body() body: ILoginGoogle) {
     return this.authService.loginGoogle(body);
@@ -31,5 +44,15 @@ export class WebAuthController {
   @UseGuards(UserGuard)
   getMeData() {
     return this.authService.getMeData();
+  }
+
+  @Patch('v1/verify-email')
+  verifyEmail(@Query('token') token: string) {
+    return this.authService.verifyEmail(token);
+  }
+
+  @Patch('v1/resend-verification-email')
+  resendVerificationEmail(@Query('email') email: string) {
+    return this.authService.resendVerificationEmail(email);
   }
 }

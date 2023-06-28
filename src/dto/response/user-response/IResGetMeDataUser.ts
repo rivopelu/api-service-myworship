@@ -5,4 +5,6 @@ export interface IResGetMeDataUser {
   username: string;
   role: UserRoleEnum;
   image: string;
+  email: string;
+  is_verified_email: boolean;
 }

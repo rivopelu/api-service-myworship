@@ -15,6 +15,10 @@ export class User {
   id: number;
   @Column({ unique: true })
   username: string;
+  @Column({ name: 'email_verification_token', type: 'text', nullable: true })
+  emailVerificationToken: string;
+  @Column({ default: false, type: 'boolean', name: 'is_verified_email' })
+  isVerifiedEmail: boolean;
   @Column()
   name: string;
   @Column({ unique: true })

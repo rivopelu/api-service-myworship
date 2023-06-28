@@ -126,7 +126,7 @@ export class CmsLyricsService extends BaseService {
     } else {
       const newData = await this.lyricsRepository.save({
         title: data.title,
-        slug: this.utilsHelper.generateSlug(data.title),
+        slug: this.utilsHelper.generateSlug(data.title) + '-' + findArtist.slug,
         description: data.description,
         lyric: data.lyric,
         youtubeUrl: data.youtube_url,
