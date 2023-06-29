@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -26,6 +25,7 @@ import { REQUEST } from '@nestjs/core';
 import { faker } from '@faker-js/faker';
 import { UserRoleEnum } from '../../../enum/user-role-enum';
 import { MailService } from '../../../mail/mail.service';
+import IReqResetForgotPasswordDto from '../../../dto/request/auth-request/IReqResetForgotPasswordDto';
 
 @Injectable()
 export class WebAuthService extends BaseService {
@@ -244,6 +244,50 @@ export class WebAuthService extends BaseService {
     }
   }
 
+  async sendForgotPasswordEmail(email: string) {
+    if (!email) {
+      throw new BadRequestException('Email Is Required');
+    }
+    const findData = await this.userRepository.findOneBy({ email: email });
+    if (!findData) {
+      throw new NotFoundException(
+        'Email is not yet registered on my worship platform',
+      );
+    } else {
+      const generateTokenVerified = this.utilsHelper.generateJwt({
+        email: faker.internet.email(),
+        role: UserRoleEnum.USER,
+        name: faker.person.fullName() + new Date().getTime(),
+        id: new Date().getTime(),
+        username: faker.person.fullName() + new Date().getTime(),
+      });
+      const updateData = await this.userRepository.update(
+        {
+          id: findData.id,
+        },
+        {
+          forgotPasswordToken: generateTokenVerified,
+        },
+      );
+      if (updateData) {
+        const sendEmail = await this.mailService
+          .sendEmailForgotPassword({
+            email: findData.email,
+            name: findData.name,
+            token: generateTokenVerified,
+          })
+          .then(() => {
+            return true;
+          });
+        if (sendEmail) {
+          return this.baseResponse.BaseResponseWithMessage(
+            'Send Email Reset Password Success',
+          );
+        }
+      }
+    }
+  }
+
   async resendVerificationEmail(email: string) {
     if (!email) {
       throw new BadRequestException('Email Required');
@@ -288,6 +332,37 @@ export class WebAuthService extends BaseService {
               );
             }
           }
+        }
+      }
+    }
+  }
+
+  async resetPassword(body: IReqResetForgotPasswordDto) {
+    const findData = await this.userRepository.findOne({
+      where: {
+        forgotPasswordToken: body.token,
+      },
+    });
+    if (!findData) {
+      throw new NotFoundException('User Not Found');
+    } else {
+      const hashPassword = await this.utilsHelper.encryptPassword(
+        body.password,
+      );
+      if (hashPassword) {
+        const updateData = await this.userRepository.update(
+          {
+            id: findData.id,
+          },
+          {
+            password: hashPassword,
+            forgotPasswordToken: null,
+          },
+        );
+        if (updateData) {
+          return this.baseResponse.BaseResponseWithMessage(
+            'password Updated Success',
+          );
         }
       }
     }

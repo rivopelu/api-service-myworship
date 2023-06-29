@@ -17,6 +17,8 @@ export class User {
   username: string;
   @Column({ name: 'email_verification_token', type: 'text', nullable: true })
   emailVerificationToken: string;
+  @Column({ name: 'forgot_password_token', type: 'text', nullable: true })
+  forgotPasswordToken: string;
   @Column({ default: false, type: 'boolean', name: 'is_verified_email' })
   isVerifiedEmail: boolean;
   @Column()

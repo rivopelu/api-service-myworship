@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ENV } from '../constants/ENV';
 import BaseService from '../apps/base-service';
 
@@ -38,4 +38,31 @@ export class MailService extends BaseService {
         this.logger.verbose('SEND EMAIL VERIFICATION SUCCESS', email);
       });
   }
+
+  async sendEmailForgotPassword(user: ISendEmailData) {
+    const url = `${ENV.CLIENT_URL}/auth/forgot-password/reset?token=${user.token}`;
+    return await this.mailerService
+      .sendMail({
+        to: user.email,
+        subject: `Hello ${user.name}!, Reset your password`,
+        template: './reset-password',
+        context: {
+          name: user.name,
+          url,
+        },
+      })
+      .then(() => {
+        this.logger.verbose('SEND EMAIL RESET PASSWORD SUCCESS', user.email);
+      })
+      .catch((e) => {
+        this.logger.error(e?.message, 'ERROR ON SEND PASSWORD', 'ERROR');
+        throw new InternalServerErrorException('ERROR ON SEND EMAIL');
+      });
+  }
+}
+
+interface ISendEmailData {
+  email: string;
+  name: string;
+  token: string;
 }

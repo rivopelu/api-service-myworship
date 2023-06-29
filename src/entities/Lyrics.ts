@@ -45,7 +45,7 @@ export class Lyrics {
   @Column({ nullable: true })
   image: string;
 
-  @ManyToOne(() => Artist, (Artist) => Artist)
+  @ManyToOne(() => Artist, (Artist) => Artist.lyrics)
   @JoinColumn({
     name: 'artist',
   })

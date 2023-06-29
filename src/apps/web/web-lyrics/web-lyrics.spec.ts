@@ -3,7 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../../app.module';
 import * as request from 'supertest';
 import { HttpStatusCode } from 'axios';
-import { UtilsHelper } from '../../../helper/utils-helper';
 import { SuperAdminGuard } from '../../../guard/super-admin.guard';
 import { AdminGuard } from '../../../guard/admin.guard';
 

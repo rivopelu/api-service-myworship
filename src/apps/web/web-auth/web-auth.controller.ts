@@ -4,6 +4,7 @@ import {
   Get,
   Patch,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import ILoginDto, {
 } from '../../../dto/request/auth-request/ILoginDto';
 import { UserGuard } from '../../../guard/user.guard';
 import { ApiTags } from '@nestjs/swagger';
+import IReqResetForgotPasswordDto from '../../../dto/request/auth-request/IReqResetForgotPasswordDto';
 
 @ApiTags('WEB AUTH CONTROLLER')
 @Controller('web/auth')
@@ -54,5 +56,15 @@ export class WebAuthController {
   @Patch('v1/resend-verification-email')
   resendVerificationEmail(@Query('email') email: string) {
     return this.authService.resendVerificationEmail(email);
+  }
+
+  @Patch('v1/send-forgot-password-email')
+  sendForgotPasswordEmail(@Query('email') email: string) {
+    return this.authService.sendForgotPasswordEmail(email);
+  }
+
+  @Put('v1/reset-password')
+  resetPassword(@Body() body: IReqResetForgotPasswordDto) {
+    return this.authService.resetPassword(body);
   }
 }

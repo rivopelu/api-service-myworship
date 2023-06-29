@@ -120,6 +120,14 @@ export class WebLyricsService extends BaseService {
           view: parseInt(data.view.toString()) + 1,
         },
       );
+      await this.artistRepository.update(
+        {
+          id: data.artist.id,
+        },
+        {
+          view: parseInt(data.artist.view.toString()) + 1,
+        },
+      );
       const getOtherSong = await this.lyricsRepository.find({
         where: {
           status: StatusEnum.PUBLISH,

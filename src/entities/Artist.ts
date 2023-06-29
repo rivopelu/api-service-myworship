@@ -4,11 +4,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { StatusEnum } from '../enum/status-enum';
 import { User } from './User';
+import { Lyrics } from './Lyrics';
 
 @Entity()
 export class Artist {
@@ -48,4 +50,7 @@ export class Artist {
     name: 'approved_by',
   })
   approved_by: User;
+
+  @OneToMany(() => Lyrics, (lyrics) => lyrics.artist)
+  lyrics: Lyrics[];
 }
