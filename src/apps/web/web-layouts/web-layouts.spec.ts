@@ -3,38 +3,33 @@ import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../../app.module';
 import * as request from 'supertest';
 import { HttpStatusCode } from 'axios';
-import {
-  ISetToken,
-  loginCmsTest,
-  setTokenTest,
-} from '../../../utils/testing-utils';
+import { SuperAdminGuard } from '../../../guard/super-admin.guard';
+import { AdminGuard } from '../../../guard/admin.guard';
 
-describe('WEB ARTIST TEST', () => {
+describe('WEB LYRIC TEST', () => {
   let app: INestApplication;
-  let token: ISetToken;
-
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideGuard(AdminGuard) // Override the AuthGuard
+      .useValue({ canActivate: () => true })
+      .overrideGuard(SuperAdminGuard) // Override the AuthGuard
+      .useValue({ canActivate: () => true })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const authToken = await loginCmsTest(app);
-    token = setTokenTest(authToken);
   });
 
   afterAll(async () => {
     await app.close();
   });
-  it('should get detail lyric by slug', function () {
-    const slug = 'unit-test';
+  it('GET WEB LAYOUTS', function () {
     return request(app.getHttpServer())
-      .get(`/web/artist/v1/detail/${slug}`)
-      .set(token.auth, token.token)
+      .get('/web/layouts/v1/home-content')
       .then((res) => {
         expect(res.status).toEqual(HttpStatusCode.Ok);
-        expect(res.body.response_data.slug).toEqual(slug);
       });
   });
 });
