@@ -5,58 +5,55 @@ on:
     branches: [ main ]
 
 jobs:
-  TEST :
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js 16
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
-          cache: 'npm'
-      - run: npm i
-      - run: npm run build
-      - run: npm test
-  CHECK_DIR:
-    runs-on: ubuntu-latest
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+        cache: 'npm'
+    - run: npm i
+    - run: npm run build
+    - run: npm test
 
-    steps:
-      - name: run a one-line script
-        run: echo RUNNING
 
-      - name: CHECK DIR
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST_PRODUCTION }}
-          username: ${{ secrets.USERNAME_PRODUCTION }}
-          key: ${{ secrets.PRIVATE_KEY_PRODUCTION }}
-          port: 22
-          script: |
-            ls
-            cd ~/app-production
-            ls
-  DEPLOYMENT:
-    runs-on: ubuntu-latest
+    #CHECK DIR
 
-    steps:
-      - name: Deploying
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST_PRODUCTION }}
-          username: ${{ secrets.USERNAME_PRODUCTION }}
-          key: ${{ secrets.PRIVATE_KEY_PRODUCTION }}
-          port: 22
-          script: |
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh  
-            cd ~/app-production
-            ls
-            pm2 stop all
-            git checkout main
-            git pull origin main
-            rm -rf node_modules
-            rm -rf dist
-            npm install
-            npm run build:production
-            pm2 restart all
-            echo success
+    - name: CHECK DIR
+      run: echo RUNNING
+
+    - name: CHECK DIR
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST_PRODUCTION }}
+        username: ${{ secrets.USERNAME_PRODUCTION }}
+        key: ${{ secrets.PRIVATE_KEY_PRODUCTION }}
+        port: 22
+        script: |
+          ls
+          cd ~/app-production
+          ls
+
+    #          DEPLOY PRODUCTION
+    - name: DEPLOY PRODUCTION
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST_PRODUCTION }}
+        username: ${{ secrets.USERNAME_PRODUCTION }}
+        key: ${{ secrets.PRIVATE_KEY_PRODUCTION }}
+        port: 22
+        script: |
+          export NVM_DIR=~/.nvm
+          source ~/.nvm/nvm.sh  
+          cd ~/app-production
+          ls
+          pm2 stop all
+          git checkout main
+          git pull origin main
+          rm -rf node_modules
+          rm -rf dist
+          npm install
+          npm run build:production
+          pm2 restart all
+          echo success
