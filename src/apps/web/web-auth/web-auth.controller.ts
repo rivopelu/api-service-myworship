@@ -6,6 +6,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { WebAuthService } from './web-auth.service';
@@ -16,6 +17,7 @@ import ILoginDto, {
 import { UserGuard } from '../../../guard/user.guard';
 import { ApiTags } from '@nestjs/swagger';
 import IReqResetForgotPasswordDto from '../../../dto/request/auth-request/IReqResetForgotPasswordDto';
+import { Request } from 'express';
 
 @ApiTags('WEB AUTH CONTROLLER')
 @Controller('web/auth')

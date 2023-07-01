@@ -20,12 +20,13 @@ import { ISuccessLoginResponse } from '../../../dto/response/auth-response/ISucc
 import { ReturnBaseResponse } from '../../../config/base-response-config';
 import { IResGetMeDataUser } from '../../../dto/response/user-response/IResGetMeDataUser';
 import { IGenerateJwtData } from '../../../utils/utils-interfaces-type';
-import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
 import { faker } from '@faker-js/faker';
 import { UserRoleEnum } from '../../../enum/user-role-enum';
 import { MailService } from '../../../mail/mail.service';
 import IReqResetForgotPasswordDto from '../../../dto/request/auth-request/IReqResetForgotPasswordDto';
+import { Request } from 'express';
+import { getClientInfo } from '../../../utils/getClientInfo';
 
 @Injectable()
 export class WebAuthService extends BaseService {
@@ -155,6 +156,7 @@ export class WebAuthService extends BaseService {
         email: findData.email,
         image: findData.image,
         role: findData.role,
+        phone_number: findData?.phoneNumber ?? null,
         username: findData.username,
         is_verified_email: findData.isVerifiedEmail,
       };

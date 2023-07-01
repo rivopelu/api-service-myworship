@@ -31,6 +31,8 @@ export class User {
   role: UserRoleEnum;
   @Column({ nullable: true })
   image: string;
+  @Column({ nullable: true, type: 'text', name: 'phone_number' })
+  phoneNumber: string;
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at' })

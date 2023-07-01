@@ -39,6 +39,7 @@ export class CmsUserService extends BaseService {
         name: findData.name,
         email: findData.email,
         image: findData.image,
+        phone_number: findData?.phoneNumber ?? null,
         role: findData.role,
         username: findData.username,
         is_verified_email: findData.isVerifiedEmail,

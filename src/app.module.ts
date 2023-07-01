@@ -33,6 +33,8 @@ import { WebArtistService } from './apps/web/web-artist/web-artist.service';
 import { MailModule } from './mail/mail.module';
 import { WebLayoutsController } from './apps/web/web-layouts/web-layouts.controller';
 import { WebLayoutsService } from './apps/web/web-layouts/web-layouts.service';
+import { WebUserController } from './apps/web/web-user/web-user.controller';
+import { WebUserService } from './apps/web/web-user/web-user.service';
 
 @Module({
   imports: [
@@ -56,6 +58,7 @@ import { WebLayoutsService } from './apps/web/web-layouts/web-layouts.service';
     WebLyricsController,
     WebArtistController,
     WebLayoutsController,
+    WebUserController,
   ],
   providers: [
     {
@@ -73,6 +76,7 @@ import { WebLayoutsService } from './apps/web/web-layouts/web-layouts.service';
     WebLyricsService,
     WebArtistService,
     WebLayoutsService,
+    WebUserService,
   ],
 })
 export class AppModule {}
