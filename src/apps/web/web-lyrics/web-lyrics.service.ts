@@ -325,11 +325,13 @@ export class WebLyricsService extends BaseService {
           comment: item.comment,
           comment_by_image: item.comment_by.image,
           comment_by_username: item.comment_by.username,
+          created_at: item.createdAt,
           sub_comment: item.subComment.map((sub) => {
             return {
               comment: sub.comment,
               comment_by_username: sub.comment_by.username,
               comment_by_image: sub.comment_by.image,
+              created_at: sub.createdAt,
             };
           }),
         };
