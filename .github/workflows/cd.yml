@@ -3,9 +3,6 @@ name: CD
 on:
   push:
     branches: [ development ]
-env:
-  ENV: development
-
 jobs:
   STAGING:
     runs-on: ubuntu-latest
@@ -20,7 +17,7 @@ jobs:
             npm i
             npm run build
             npm run test
-                
+      
 
       #DEPLOY
       - name: CHECK DIR

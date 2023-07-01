@@ -8,11 +8,13 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
 import { StatusEnum } from '../enum/status-enum';
 import { Artist } from './Artist';
 import { User } from './User';
 import { Categories } from './Categories';
+import { LyricsComment } from './LyricsComment';
 
 @Entity()
 export class Lyrics {
@@ -65,4 +67,7 @@ export class Lyrics {
   @ManyToMany(() => Categories, (cat) => cat.lyrics)
   @JoinTable()
   categories: Categories[];
+
+  @ManyToOne(() => LyricsComment, (com) => com.lyrics)
+  comments: LyricsComment;
 }

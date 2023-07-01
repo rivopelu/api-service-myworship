@@ -14,15 +14,11 @@ jobs:
         with:
           node-version: 16.x
           cache: 'npm'
-      - run: npm i
-      - run: npm run build
-      - run: npm test
+          script: |
+            npm i
+            npm run build
+            npm run test
 
-
-      #CHECK DIR
-
-      - name: CHECK DIR
-        run: echo RUNNING
 
       - name: CHECK DIR
         uses: appleboy/ssh-action@master

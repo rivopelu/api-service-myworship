@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -15,6 +16,14 @@ import { DateHelper } from '../../../helper/date-helper';
 import { IPaginationQueryParams } from '../../../utils/utils-interfaces-type';
 import { IResLyricPaginationByArtistWeb } from '../../../dto/response/lyric-response/IResLyricPaginationByArtistWeb';
 import { ReturnResponsePagination } from '../../../config/base-response-config';
+import { IReqCommentLyrics } from '../../../dto/request/lyrics-request/IReqCommentLyrics';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { User } from '../../../entities/User';
+import { LyricsComment } from '../../../entities/LyricsComment';
+import { IReqAddSubLyricComment } from '../../../dto/request/lyrics-request/IReqAddSubLyricComment';
+import { SubLyricsComment } from '../../../entities/SubLyricsComment';
+import { IResCommentLyrics } from '../../../dto/response/lyric-response/IResCommentLyrics';
 
 @Injectable()
 export class WebLyricsService extends BaseService {
@@ -25,6 +34,13 @@ export class WebLyricsService extends BaseService {
     private lyricsRepository: Repository<Lyrics>,
     @InjectRepository(Artist)
     private artistRepository: Repository<Artist>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    @InjectRepository(LyricsComment)
+    private lyricsCommentRepository: Repository<LyricsComment>,
+    @InjectRepository(SubLyricsComment)
+    private subLyricsCommentRepository: Repository<SubLyricsComment>,
+    @Inject(REQUEST) private readonly req: Request,
   ) {
     super();
   }
@@ -236,6 +252,89 @@ export class WebLyricsService extends BaseService {
           total_data: count,
         });
       }
+    }
+  }
+
+  async addCommentLyrics(body: IReqCommentLyrics) {
+    const userId = this.req['user'].id;
+    const findUser = await this.userRepository.findOneBy({ id: userId });
+    const findLyrics = await this.lyricsRepository.findOneBy({
+      slug: body.lyrics_slug,
+    });
+    if (!findUser) {
+      throw new BadRequestException('User Not Found');
+    } else if (!findLyrics) {
+      throw new BadRequestException('Lyrics Not Found');
+    } else {
+      const addComment = await this.lyricsCommentRepository.save({
+        lyrics: findLyrics,
+        comment_by: findUser,
+        comment: body.comment,
+      });
+      if (addComment) {
+        return this.baseResponse.BaseResponseWithMessage('Comment Success');
+      }
+    }
+  }
+
+  async addSubCommentLyrics(body: IReqAddSubLyricComment) {
+    const userId = this.req['user'].id;
+    const findUser = await this.userRepository.findOneBy({ id: userId });
+    const findParent = await this.lyricsCommentRepository.findOneBy({
+      id: body.parent_id,
+    });
+    if (!findUser) {
+      throw new BadRequestException('User Not Found');
+    } else if (!findParent) {
+      throw new BadRequestException('Lyrics Not Found');
+    } else {
+      const addComment = await this.subLyricsCommentRepository.save({
+        parentComment: findParent,
+        comment_by: findUser,
+        comment: body.comment,
+      });
+      if (addComment) {
+        return this.baseResponse.BaseResponseWithMessage('Comment Success');
+      }
+    }
+  }
+
+  async getCommentLyrics(slug: string) {
+    if (!slug) {
+      throw new BadRequestException('Slug Required');
+    }
+    const findComment = await this.lyricsCommentRepository.find({
+      where: {
+        lyrics: {
+          slug: slug,
+        },
+      },
+      relations: {
+        subComment: {
+          comment_by: true,
+        },
+        comment_by: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+    if (findComment) {
+      const resData: IResCommentLyrics[] = findComment.map((item) => {
+        return {
+          comment: item.comment,
+          comment_by_image: item.comment_by.image,
+          comment_by_username: item.comment_by.username,
+          sub_comment: item.subComment.map((sub) => {
+            return {
+              comment: sub.comment,
+              comment_by_username: sub.comment_by.username,
+              comment_by_image: sub.comment_by.image,
+            };
+          }),
+        };
+      });
+      return this.baseResponse.BaseResponse<IResCommentLyrics[]>(resData);
     }
   }
 }
