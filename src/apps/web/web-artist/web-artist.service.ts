@@ -55,7 +55,7 @@ export class WebArtistService extends BaseService {
           image: data.image,
           slug: data.slug,
           description: data.description,
-          view: parseInt(data.view.toString()),
+          total_view: parseInt(data.view.toString()),
           total_lyric: count,
           publish_date: data.publishAt,
           top_lyric: topLyric.map((item) => {
