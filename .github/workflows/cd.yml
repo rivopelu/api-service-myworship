@@ -7,7 +7,7 @@ env:
   ENV: development
 
 jobs:
-  RUN_STAGING:
+  STAGING:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,12 +16,11 @@ jobs:
         with:
           node-version: 16.x
           cache: 'npm'
-      - run: npm i
-      - run: npm run build
-      - run: npm test
-
-      - name: run a one-line script
-        run: echo RUNNING
+          script: |
+            npm i
+            npm run build
+            npm run test
+                
 
       #DEPLOY
       - name: CHECK DIR
