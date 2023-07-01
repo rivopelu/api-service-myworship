@@ -8,53 +8,53 @@ env:
 
 jobs:
   RUN STAGING:
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v3
-    - name: RUNNING TEST
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16.x
-        cache: 'npm'
-    - run: npm i
-    - run: npm run build
-    - run: npm test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: RUNNING TEST
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - run: npm i
+      - run: npm run build
+      - run: npm test
 
-    - name: run a one-line script
-      run: echo RUNNING
+      - name: run a one-line script
+        run: echo RUNNING
 
-    #DEPLOY
-    - name: CHECK DIR
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.PRIVATE_KEY }}
-        port: 22
-        script: |
-          ls
-          cd ~/api-service-myworship
-          ls
+      #DEPLOY
+      - name: CHECK DIR
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: 22
+          script: |
+            ls
+            cd ~/api-service-myworship
+            ls
 
-    #DEPLOY
-    - name: RUNNING DEPLOY STAGING
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.PRIVATE_KEY }}
-        port: 22
-        script: |
-          export NVM_DIR=~/.nvm
-          source ~/.nvm/nvm.sh  
-          cd ~/api-service-myworship
-          ls
-          pm2 stop all
-          git checkout development
-          git pull origin development
-          rm -rf node_modules
-          rm -rf dist
-          npm install
-          npm run build:staging
-          pm2 restart all
-          echo success
+      #DEPLOY
+      - name: RUNNING DEPLOY STAGING
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: 22
+          script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh  
+            cd ~/api-service-myworship
+            ls
+            pm2 stop all
+            git checkout development
+            git pull origin development
+            rm -rf node_modules
+            rm -rf dist
+            npm install
+            npm run build:staging
+            pm2 restart all
+            echo success
