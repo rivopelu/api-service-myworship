@@ -23,7 +23,10 @@ import { User } from '../../../entities/User';
 import { LyricsComment } from '../../../entities/LyricsComment';
 import { IReqAddSubLyricComment } from '../../../dto/request/lyrics-request/IReqAddSubLyricComment';
 import { SubLyricsComment } from '../../../entities/SubLyricsComment';
-import { IResCommentLyrics } from '../../../dto/response/lyric-response/IResCommentLyrics';
+import {
+  IResCommentData,
+  IResCommentLyrics,
+} from '../../../dto/response/lyric-response/IResCommentLyrics';
 
 @Injectable()
 export class WebLyricsService extends BaseService {
@@ -60,7 +63,7 @@ export class WebLyricsService extends BaseService {
         order: {
           title: 'DESC',
         },
-        take: 10,
+        take: 5,
       });
 
       const artist = await this.lyricsRepository.find({
@@ -76,7 +79,7 @@ export class WebLyricsService extends BaseService {
         order: {
           title: 'DESC',
         },
-        take: 10,
+        take: 5,
       });
 
       if (lyrics && artist) {
@@ -303,27 +306,29 @@ export class WebLyricsService extends BaseService {
     if (!slug) {
       throw new BadRequestException('Slug Required');
     }
-    const findComment = await this.lyricsCommentRepository.find({
-      where: {
-        lyrics: {
-          slug: slug,
+    const [findComment, count] =
+      await this.lyricsCommentRepository.findAndCount({
+        where: {
+          lyrics: {
+            slug: slug,
+          },
         },
-      },
-      relations: {
-        subComment: {
+        relations: {
+          subComment: {
+            comment_by: true,
+          },
           comment_by: true,
         },
-        comment_by: true,
-      },
-      order: {
-        createdAt: 'DESC',
-        subComment: {
+        order: {
           createdAt: 'DESC',
+          subComment: {
+            createdAt: 'DESC',
+          },
         },
-      },
-    });
+        take: 5,
+      });
     if (findComment) {
-      const resData: IResCommentLyrics[] = findComment.map((item) => {
+      const resData: IResCommentData[] = findComment.map((item) => {
         return {
           comment: item.comment,
           comment_by_image: item.comment_by.image,
@@ -341,7 +346,12 @@ export class WebLyricsService extends BaseService {
           }),
         };
       });
-      return this.baseResponse.BaseResponse<IResCommentLyrics[]>(resData);
+      return this.baseResponse.BaseResponse<IResCommentLyrics>({
+        is_show_other_comment: count - 5 === 1,
+        total_previous_comment: count - 5 <= 0 ? 0 : count - 5,
+        total_data: count,
+        comment: resData,
+      });
     }
   }
 }
