@@ -12,4 +12,5 @@ export interface IResSubCommentLyrics {
   comment: string;
   comment_by_image: string;
   created_at: Date;
+  id: number;
 }
