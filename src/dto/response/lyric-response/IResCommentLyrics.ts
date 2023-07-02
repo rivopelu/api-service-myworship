@@ -4,6 +4,7 @@ export interface IResCommentLyrics {
   comment: string;
   sub_comment: IResSubCommentLyrics[];
   created_at: Date;
+  id: number;
 }
 
 export interface IResSubCommentLyrics {

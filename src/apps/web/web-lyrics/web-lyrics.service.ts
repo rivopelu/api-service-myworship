@@ -326,6 +326,7 @@ export class WebLyricsService extends BaseService {
           comment_by_image: item.comment_by.image,
           comment_by_username: item.comment_by.username,
           created_at: item.createdAt,
+          id: item.id,
           sub_comment: item.subComment.map((sub) => {
             return {
               comment: sub.comment,
