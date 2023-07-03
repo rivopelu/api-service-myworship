@@ -354,4 +354,56 @@ export class WebLyricsService extends BaseService {
       });
     }
   }
+
+  async getCommentLyricsAll(slug: string) {
+    if (!slug) {
+      throw new BadRequestException('Slug Required');
+    }
+    const [findComment, count] =
+      await this.lyricsCommentRepository.findAndCount({
+        where: {
+          lyrics: {
+            slug: slug,
+          },
+        },
+        relations: {
+          subComment: {
+            comment_by: true,
+          },
+          comment_by: true,
+        },
+        order: {
+          createdAt: 'DESC',
+          subComment: {
+            createdAt: 'DESC',
+          },
+        },
+      });
+    if (findComment) {
+      const resData: IResCommentData[] = findComment.map((item) => {
+        return {
+          comment: item.comment,
+          comment_by_image: item.comment_by.image,
+          comment_by_username: item.comment_by.username,
+          created_at: this.dateHelper.parseToUtc(item.createdAt),
+          id: item.id,
+          sub_comment: item.subComment.map((sub) => {
+            return {
+              comment: sub.comment,
+              comment_by_username: sub.comment_by.username,
+              comment_by_image: sub.comment_by.image,
+              created_at: this.dateHelper.parseToUtc(sub.createdAt),
+              id: sub.id,
+            };
+          }),
+        };
+      });
+      return this.baseResponse.BaseResponse<IResCommentLyrics>({
+        is_show_other_comment: count - 5 === 1,
+        total_previous_comment: count - 5 <= 0 ? 0 : count - 5,
+        total_data: count,
+        comment: resData,
+      });
+    }
+  }
 }

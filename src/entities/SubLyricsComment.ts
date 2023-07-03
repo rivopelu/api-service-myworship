@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './User';
-import { Lyrics } from './Lyrics';
 import { LyricsComment } from './LyricsComment';
 
 @Entity({ name: 'sub_lyrics_comment' })

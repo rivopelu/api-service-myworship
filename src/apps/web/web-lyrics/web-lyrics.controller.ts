@@ -45,6 +45,11 @@ export class WebLyricsController {
     return this.lyricService.getCommentLyrics(slug);
   }
 
+  @Get('v1/comment/all/:slug')
+  getCommentLyricsAll(@Param('slug') slug: string) {
+    return this.lyricService.getCommentLyricsAll(slug);
+  }
+
   @Get('/v1/list/artist/:slug')
   getListPaginationLyricByArtistSlug(
     @Param('slug') slug: string,
