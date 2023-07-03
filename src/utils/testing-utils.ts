@@ -116,6 +116,16 @@ export function getRandomLyricsSlugTest() {
   return getRandomStringFromArray(dataArray);
 }
 
+export function getRandomCommentId() {
+  function getRandomStringFromArray(array: number[]): number {
+    const randomIndex = Math.floor(Math.random() * array.length);
+    return array[randomIndex];
+  }
+
+  const dataArray = [72, 74, 73, 57, 8, 3, 19, 39, 40, 82, 83, 85, 86];
+  return getRandomStringFromArray(dataArray);
+}
+
 export interface ISetToken {
   auth: string;
   token: string;

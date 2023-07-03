@@ -8,11 +8,13 @@ import { AdminGuard } from '../../../guard/admin.guard';
 import { IReqCommentLyrics } from '../../../dto/request/lyrics-request/IReqCommentLyrics';
 import { faker } from '@faker-js/faker';
 import {
+  getRandomCommentId,
   getRandomLyricsSlugTest,
   ISetToken,
   loginCmsTest,
   setTokenTest,
 } from '../../../utils/testing-utils';
+import { IReqAddSubLyricComment } from '../../../dto/request/lyrics-request/IReqAddSubLyricComment';
 
 describe('WEB LYRIC TEST', () => {
   let app: INestApplication;
@@ -73,6 +75,19 @@ describe('WEB LYRIC TEST', () => {
         const mockData: IReqCommentLyrics = {
           comment: faker.lorem.paragraphs(2),
           lyrics_slug: getRandomLyricsSlugTest(),
+        };
+        return request(app.getHttpServer())
+          .post('/web/lyrics/v1/add-comment')
+          .send(mockData)
+          .set(token.auth, token.token)
+          .then((res) => {
+            expect(res.status).toEqual(HttpStatusCode.Ok);
+          });
+      });
+      it('should post sub comment', async function () {
+        const mockData: IReqAddSubLyricComment = {
+          comment: faker.lorem.paragraphs(2),
+          parent_id: getRandomCommentId(),
         };
         return request(app.getHttpServer())
           .post('/web/lyrics/v1/add-comment')
