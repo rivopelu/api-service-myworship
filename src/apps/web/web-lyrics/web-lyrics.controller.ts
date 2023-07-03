@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -48,6 +49,12 @@ export class WebLyricsController {
   @Get('v1/comment/all/:slug')
   getCommentLyricsAll(@Param('slug') slug: string) {
     return this.lyricService.getCommentLyricsAll(slug);
+  }
+
+  @UseGuards(UserGuard)
+  @Patch('v1/like/:slug')
+  likeUnLikeLyrics(@Param('slug') slug: string) {
+    return this.lyricService.likeUnLikeLyrics(slug);
   }
 
   @Get('/v1/list/artist/:slug')

@@ -27,6 +27,7 @@ import { MailService } from '../../../mail/mail.service';
 import IReqResetForgotPasswordDto from '../../../dto/request/auth-request/IReqResetForgotPasswordDto';
 import { Request } from 'express';
 import { getClientInfo } from '../../../utils/getClientInfo';
+import { LyricsLikes } from '../../../entities/LyricsLikes';
 
 @Injectable()
 export class WebAuthService extends BaseService {
@@ -36,6 +37,8 @@ export class WebAuthService extends BaseService {
     private mailService: MailService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(LyricsLikes)
+    private lyricsLikesRepository: Repository<LyricsLikes>,
     private jwtService: JwtService,
     @Inject(REQUEST)
     private req: Request,
@@ -148,9 +151,17 @@ export class WebAuthService extends BaseService {
     const findData = await this.userRepository.findOne({
       where: { id: user.id },
     });
+
     if (!findData) {
       throw new UnauthorizedException();
     } else {
+      const findLike = await this.lyricsLikesRepository.find({
+        where: { user: { id: findData.id } },
+        relations: {
+          user: true,
+          lyrics: true,
+        },
+      });
       const dataRes: IResGetMeDataUser = {
         name: findData.name,
         email: findData.email,
@@ -159,6 +170,7 @@ export class WebAuthService extends BaseService {
         phone_number: findData?.phoneNumber ?? null,
         username: findData.username,
         is_verified_email: findData.isVerifiedEmail,
+        lyrics_likes: findLike.map((item) => item.lyrics.slug),
       };
       return this.baseResponse.BaseResponse<IResGetMeDataUser>(dataRes);
     }

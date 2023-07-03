@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { UserRoleEnum } from '../enum/user-role-enum';
 import { Artist } from './Artist';
+import { LyricsLikes } from './LyricsLikes';
 
 @Entity()
 export class User {
@@ -39,4 +40,6 @@ export class User {
   updatedAt: Date;
   @OneToMany(() => Artist, (artist) => artist.created_by)
   artist_created: Artist[];
+  @OneToMany(() => LyricsLikes, (like) => like.user)
+  lyrics_like: LyricsLikes[];
 }

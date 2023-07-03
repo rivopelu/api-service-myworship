@@ -37,6 +37,7 @@ import { WebUserController } from './apps/web/web-user/web-user.controller';
 import { WebUserService } from './apps/web/web-user/web-user.service';
 import { Comment } from './entities/Comment';
 import { SubComment } from './entities/SubLyricsComment';
+import { LyricsLikes } from './entities/LyricsLikes';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { SubComment } from './entities/SubLyricsComment';
       Media,
       Comment,
       SubComment,
+      LyricsLikes,
     ]),
     JwtModule.register({
       secret: ENV.JWT_SECRET,

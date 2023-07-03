@@ -15,6 +15,7 @@ import { Artist } from './Artist';
 import { User } from './User';
 import { Categories } from './Categories';
 import { Comment } from './Comment';
+import { LyricsLikes } from './LyricsLikes';
 
 @Entity()
 export class Lyrics {
@@ -68,6 +69,9 @@ export class Lyrics {
   @JoinTable()
   categories: Categories[];
 
-  @ManyToOne(() => Comment, (com) => com.lyrics)
-  comments: Comment;
+  @OneToMany(() => Comment, (com) => com.lyrics)
+  comments: Comment[];
+
+  @OneToMany(() => LyricsLikes, (com) => com.lyrics)
+  likes: LyricsLikes[];
 }

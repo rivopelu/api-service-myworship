@@ -27,6 +27,7 @@ import {
   IResCommentLyrics,
 } from '../../../dto/response/lyric-response/IResCommentLyrics';
 import { SubComment } from '../../../entities/SubLyricsComment';
+import { LyricsLikes } from '../../../entities/LyricsLikes';
 
 @Injectable()
 export class WebLyricsService extends BaseService {
@@ -43,6 +44,8 @@ export class WebLyricsService extends BaseService {
     private lyricsCommentRepository: Repository<Comment>,
     @InjectRepository(SubComment)
     private subLyricsCommentRepository: Repository<SubComment>,
+    @InjectRepository(LyricsLikes)
+    private lyricsLikesRepository: Repository<LyricsLikes>,
     @Inject(REQUEST) private readonly req: Request,
   ) {
     super();
@@ -160,12 +163,24 @@ export class WebLyricsService extends BaseService {
         },
       });
 
+      const getCountLike = await this.lyricsLikesRepository.count({
+        where: {
+          lyrics: {
+            slug: data.slug,
+          },
+        },
+        relations: {
+          lyrics: true,
+        },
+      });
+
       const dataRes: IResDetailLyricWeb = {
         title: data.title,
         slug: data.slug,
         youtube_url: data.youtubeUrl,
         image: data.image,
         view: parseInt(data.view.toString()),
+        like: parseInt(getCountLike.toString()),
         total_lyric_artist: getCountDataArtist,
         artist_image: data.artist.image,
         published_date: this.dateHelper.parseToUtc(data.publishAt),
@@ -404,6 +419,47 @@ export class WebLyricsService extends BaseService {
         total_data: count,
         comment: resData,
       });
+    }
+  }
+
+  private async LikeData(userId: number, lyricsId: number, like?: LyricsLikes) {
+    if (like) {
+      return await this.lyricsLikesRepository
+        .delete({ id: like.id })
+        .then(() => true);
+    } else {
+      return await this.lyricsLikesRepository
+        .save({
+          user: { id: userId },
+          lyrics: { id: lyricsId },
+        })
+        .then(() => true);
+    }
+  }
+
+  async likeUnLikeLyrics(slug: string) {
+    if (!slug) {
+      throw new BadRequestException('Slug Required');
+    }
+    const findLyrics = await this.lyricsRepository.findOneBy({ slug: slug });
+    if (!findLyrics) {
+      throw new NotFoundException('Lyrics Not Found');
+    } else {
+      const userId = this.req['user'].id;
+      const findLike = await this.lyricsLikesRepository.findOne({
+        where: {
+          lyrics: {
+            id: findLyrics.id,
+          },
+          user: {
+            id: userId,
+          },
+        },
+      });
+      const updated = await this.LikeData(userId, findLyrics.id, findLike);
+      if (updated) {
+        return this.baseResponse.BaseResponseWithMessage('Success');
+      }
     }
   }
 }

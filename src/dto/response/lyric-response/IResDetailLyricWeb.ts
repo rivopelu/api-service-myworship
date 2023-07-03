@@ -7,6 +7,7 @@ export interface IResDetailLyricWeb {
   artist_image: string;
   youtube_url: string;
   view: number;
+  like: number;
   categories: ICategories[];
   published_date: Date;
   total_lyric_artist: number;

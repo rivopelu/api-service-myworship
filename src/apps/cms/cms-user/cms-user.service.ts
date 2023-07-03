@@ -16,12 +16,15 @@ import {
 import { parseTypeRoleToEnum, roleUserType } from '../../../utils/status-type';
 import { IResGetListUser } from '../../../dto/response/user-response/IResGetListUser';
 import BaseService from '../../base-service';
+import { LyricsLikes } from '../../../entities/LyricsLikes';
 
 @Injectable()
 export class CmsUserService extends BaseService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(LyricsLikes)
+    private lyricsLikesRepository: Repository<LyricsLikes>,
     @Inject(REQUEST) private readonly req: Request,
   ) {
     super();
@@ -35,6 +38,13 @@ export class CmsUserService extends BaseService {
     if (!findData) {
       throw new UnauthorizedException();
     } else {
+      const findLike = await this.lyricsLikesRepository.find({
+        where: { user: { id: findData.id } },
+        relations: {
+          user: true,
+          lyrics: true,
+        },
+      });
       const dataRes: IResGetMeDataUser = {
         name: findData.name,
         email: findData.email,
@@ -43,6 +53,7 @@ export class CmsUserService extends BaseService {
         role: findData.role,
         username: findData.username,
         is_verified_email: findData.isVerifiedEmail,
+        lyrics_likes: findLike.map((item) => item.lyrics.slug),
       };
       return this.baseResponse.BaseResponse<IResGetMeDataUser>(dataRes);
     }

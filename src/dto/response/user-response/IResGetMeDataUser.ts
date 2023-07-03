@@ -8,4 +8,5 @@ export interface IResGetMeDataUser {
   email: string;
   is_verified_email: boolean;
   phone_number: string | null;
+  lyrics_likes: string[];
 }
