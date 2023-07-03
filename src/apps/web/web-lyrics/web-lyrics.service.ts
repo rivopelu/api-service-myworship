@@ -174,6 +174,17 @@ export class WebLyricsService extends BaseService {
         },
       });
 
+      const getCountComment = await this.lyricsCommentRepository.count({
+        where: {
+          lyrics: {
+            slug: data.slug,
+          },
+        },
+        relations: {
+          lyrics: true,
+        },
+      });
+
       const dataRes: IResDetailLyricWeb = {
         title: data.title,
         slug: data.slug,
@@ -181,6 +192,7 @@ export class WebLyricsService extends BaseService {
         image: data.image,
         view: parseInt(data.view.toString()),
         like: parseInt(getCountLike.toString()),
+        comment: parseInt(getCountComment.toString()),
         total_lyric_artist: getCountDataArtist,
         artist_image: data.artist.image,
         published_date: this.dateHelper.parseToUtc(data.publishAt),
