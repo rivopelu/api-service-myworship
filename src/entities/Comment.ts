@@ -10,10 +10,10 @@ import {
 } from 'typeorm';
 import { User } from './User';
 import { Lyrics } from './Lyrics';
-import { SubLyricsComment } from './SubLyricsComment';
+import { SubComment } from './SubLyricsComment';
 
-@Entity({ name: 'lyrics_comment' })
-export class LyricsComment {
+@Entity({ name: 'comment' })
+export class Comment {
   @PrimaryGeneratedColumn('increment')
   id: number;
   @CreateDateColumn({ name: 'created_at' })
@@ -31,6 +31,6 @@ export class LyricsComment {
   })
   lyrics: Lyrics;
 
-  @OneToMany(() => SubLyricsComment, (sub) => sub.parentComment)
-  subComment: SubLyricsComment[];
+  @OneToMany(() => SubComment, (sub) => sub.parentComment)
+  subComment: SubComment[];
 }

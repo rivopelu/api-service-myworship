@@ -100,6 +100,22 @@ export function getRandomYoutubeUrl() {
   return getRandomStringFromArray(dataArray);
 }
 
+export function getRandomLyricsSlugTest() {
+  function getRandomStringFromArray(array: string[]): string {
+    const randomIndex = Math.floor(Math.random() * array.length);
+    return array[randomIndex];
+  }
+
+  const dataArray = [
+    'be-with-you',
+    'unit-test-lyrics',
+    'test-unit',
+    'layak-dipuji-disembah',
+    'baru-lirik-rivo-admin',
+  ];
+  return getRandomStringFromArray(dataArray);
+}
+
 export interface ISetToken {
   auth: string;
   token: string;

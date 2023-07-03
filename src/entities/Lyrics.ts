@@ -14,7 +14,7 @@ import { StatusEnum } from '../enum/status-enum';
 import { Artist } from './Artist';
 import { User } from './User';
 import { Categories } from './Categories';
-import { LyricsComment } from './LyricsComment';
+import { Comment } from './Comment';
 
 @Entity()
 export class Lyrics {
@@ -68,6 +68,6 @@ export class Lyrics {
   @JoinTable()
   categories: Categories[];
 
-  @ManyToOne(() => LyricsComment, (com) => com.lyrics)
-  comments: LyricsComment;
+  @ManyToOne(() => Comment, (com) => com.lyrics)
+  comments: Comment;
 }

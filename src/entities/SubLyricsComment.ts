@@ -8,10 +8,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './User';
-import { LyricsComment } from './LyricsComment';
+import { Comment } from './Comment';
 
-@Entity({ name: 'sub_lyrics_comment' })
-export class SubLyricsComment {
+@Entity({ name: 'sub_comment' })
+export class SubComment {
   @PrimaryGeneratedColumn('increment')
   id: number;
   @CreateDateColumn({ name: 'created_at' })
@@ -25,9 +25,9 @@ export class SubLyricsComment {
   @JoinColumn({ name: 'comment_by' })
   comment_by: User;
 
-  @ManyToOne(() => LyricsComment, (lyrics) => lyrics.subComment)
+  @ManyToOne(() => Comment, (lyrics) => lyrics.subComment)
   @JoinColumn({
     name: 'parent_comment',
   })
-  parentComment: LyricsComment;
+  parentComment: Comment;
 }

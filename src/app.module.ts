@@ -35,8 +35,8 @@ import { WebLayoutsController } from './apps/web/web-layouts/web-layouts.control
 import { WebLayoutsService } from './apps/web/web-layouts/web-layouts.service';
 import { WebUserController } from './apps/web/web-user/web-user.controller';
 import { WebUserService } from './apps/web/web-user/web-user.service';
-import { LyricsComment } from './entities/LyricsComment';
-import { SubLyricsComment } from './entities/SubLyricsComment';
+import { Comment } from './entities/Comment';
+import { SubComment } from './entities/SubLyricsComment';
 
 @Module({
   imports: [
@@ -47,8 +47,8 @@ import { SubLyricsComment } from './entities/SubLyricsComment';
       Categories,
       Lyrics,
       Media,
-      LyricsComment,
-      SubLyricsComment,
+      Comment,
+      SubComment,
     ]),
     JwtModule.register({
       secret: ENV.JWT_SECRET,

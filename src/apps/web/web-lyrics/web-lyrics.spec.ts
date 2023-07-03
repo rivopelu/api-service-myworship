@@ -5,21 +5,28 @@ import * as request from 'supertest';
 import { HttpStatusCode } from 'axios';
 import { SuperAdminGuard } from '../../../guard/super-admin.guard';
 import { AdminGuard } from '../../../guard/admin.guard';
+import { IReqCommentLyrics } from '../../../dto/request/lyrics-request/IReqCommentLyrics';
+import { faker } from '@faker-js/faker';
+import {
+  getRandomLyricsSlugTest,
+  ISetToken,
+  loginCmsTest,
+  setTokenTest,
+} from '../../../utils/testing-utils';
 
 describe('WEB LYRIC TEST', () => {
   let app: INestApplication;
+  let token: ISetToken;
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    })
-      .overrideGuard(AdminGuard) // Override the AuthGuard
-      .useValue({ canActivate: () => true })
-      .overrideGuard(SuperAdminGuard) // Override the AuthGuard
-      .useValue({ canActivate: () => true })
-      .compile();
+    }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
+    const authToken = await loginCmsTest(app);
+    token = setTokenTest(authToken);
   });
 
   afterAll(async () => {
@@ -59,6 +66,22 @@ describe('WEB LYRIC TEST', () => {
           expect(res.status).toEqual(HttpStatusCode.Ok);
           expect(res.body.response_data.length).toEqual(2);
         });
+    });
+
+    describe('POST COMMENT LYRICS', function () {
+      it('should post comment', async function () {
+        const mockData: IReqCommentLyrics = {
+          comment: faker.lorem.paragraphs(2),
+          lyrics_slug: getRandomLyricsSlugTest(),
+        };
+        return request(app.getHttpServer())
+          .post('/web/lyrics/v1/add-comment')
+          .send(mockData)
+          .set(token.auth, token.token)
+          .then((res) => {
+            expect(res.status).toEqual(HttpStatusCode.Ok);
+          });
+      });
     });
   });
 });

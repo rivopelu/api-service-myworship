@@ -20,13 +20,13 @@ import { IReqCommentLyrics } from '../../../dto/request/lyrics-request/IReqComme
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { User } from '../../../entities/User';
-import { LyricsComment } from '../../../entities/LyricsComment';
+import { Comment } from '../../../entities/Comment';
 import { IReqAddSubLyricComment } from '../../../dto/request/lyrics-request/IReqAddSubLyricComment';
-import { SubLyricsComment } from '../../../entities/SubLyricsComment';
 import {
   IResCommentData,
   IResCommentLyrics,
 } from '../../../dto/response/lyric-response/IResCommentLyrics';
+import { SubComment } from '../../../entities/SubLyricsComment';
 
 @Injectable()
 export class WebLyricsService extends BaseService {
@@ -39,10 +39,10 @@ export class WebLyricsService extends BaseService {
     private artistRepository: Repository<Artist>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    @InjectRepository(LyricsComment)
-    private lyricsCommentRepository: Repository<LyricsComment>,
-    @InjectRepository(SubLyricsComment)
-    private subLyricsCommentRepository: Repository<SubLyricsComment>,
+    @InjectRepository(Comment)
+    private lyricsCommentRepository: Repository<Comment>,
+    @InjectRepository(SubComment)
+    private subLyricsCommentRepository: Repository<SubComment>,
     @Inject(REQUEST) private readonly req: Request,
   ) {
     super();
