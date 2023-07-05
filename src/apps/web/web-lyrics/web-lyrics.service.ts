@@ -28,14 +28,16 @@ import {
 } from '../../../dto/response/lyric-response/IResCommentLyrics';
 import { SubComment } from '../../../entities/SubLyricsComment';
 import { LyricsLikes } from '../../../entities/LyricsLikes';
+import { IResListLyricsWebGeneral } from '../../../dto/response/lyric-response/IResListLyricsWebGeneral';
+import { IResListLyricsInDetailLyrics } from '../../../dto/response/lyric-response/IResListLyricsInDetailLyrics';
+import { LyricsRepository } from '../../../repositories/lyrics.repository';
 
 @Injectable()
 export class WebLyricsService extends BaseService {
   private dateHelper = new DateHelper();
 
   constructor(
-    @InjectRepository(Lyrics)
-    private lyricsRepository: Repository<Lyrics>,
+    private lyricsRepository: LyricsRepository,
     @InjectRepository(Artist)
     private artistRepository: Repository<Artist>,
     @InjectRepository(User)
@@ -204,28 +206,6 @@ export class WebLyricsService extends BaseService {
           return {
             slug: item.slug,
             name: item.name,
-          };
-        }),
-        other_lyrics: getOtherSong.map((item) => {
-          return {
-            youtube_url: item.youtubeUrl,
-            slug: item.slug,
-            title: item.title,
-            image: item.image,
-            artist_name: item.artist.name,
-            artist_slug: item.artist.slug,
-            view: parseInt(item.view.toString()),
-          };
-        }),
-        other_artist_lyrics: getOtherSongFromArtist.map((item) => {
-          return {
-            slug: item.slug,
-            youtube_url: item.youtubeUrl,
-            title: item.title,
-            image: item.image,
-            artist_name: data.artist.name,
-            artist_slug: data.artist.slug,
-            view: parseInt(item.view.toString()),
           };
         }),
       };
@@ -472,6 +452,47 @@ export class WebLyricsService extends BaseService {
       if (updated) {
         return this.baseResponse.BaseResponseWithMessage('Success');
       }
+    }
+  }
+
+  async getListSongDetailLyrics(slug: string) {
+    if (!slug) {
+      throw new BadRequestException('Artist Slug Required');
+    }
+    const findLyrics = await this.lyricsRepository.findOne({
+      where: { slug: slug },
+      relations: { artist: true },
+    });
+    if (findLyrics) {
+      const getOtherSong: IResListLyricsWebGeneral[] =
+        await this.lyricsRepository.findTopLyricsList();
+
+      const getTopLyricsByArtist: IResListLyricsWebGeneral[] =
+        await this.lyricsRepository.findTopLyricsListByArtist(
+          findLyrics.artist.slug,
+        );
+
+      const resData: IResListLyricsInDetailLyrics = {
+        top_all_lyrics: getOtherSong.map((item) => {
+          return {
+            ...item,
+            total_view: parseInt(item.total_view.toString()),
+            total_like: parseInt(item.total_like.toString()),
+            total_comment: parseInt(item.total_comment.toString()),
+          };
+        }),
+        top_lyrics_artist: getTopLyricsByArtist.map((item) => {
+          return {
+            ...item,
+            total_view: parseInt(item.total_view.toString()),
+            total_like: parseInt(item.total_like.toString()),
+            total_comment: parseInt(item.total_comment.toString()),
+          };
+        }),
+      };
+      return this.baseResponse.BaseResponse<IResListLyricsInDetailLyrics>(
+        resData,
+      );
     }
   }
 }

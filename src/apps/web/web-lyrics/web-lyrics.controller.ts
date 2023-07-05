@@ -40,6 +40,10 @@ export class WebLyricsController {
   getDetailLyricWebBySlug(@Param('slug') slug: string) {
     return this.lyricService.getDetailLyricBySlugWeb(slug);
   }
+  @Get('v1/detail/:slug/list')
+  getListSongInDetailLyrics(@Param('slug') slug: string) {
+    return this.lyricService.getListSongDetailLyrics(slug);
+  }
 
   @Get('v1/comment/:slug')
   getCommentLyrics(@Param('slug') slug: string) {

@@ -3,8 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../../app.module';
 import * as request from 'supertest';
 import { HttpStatusCode } from 'axios';
-import { SuperAdminGuard } from '../../../guard/super-admin.guard';
-import { AdminGuard } from '../../../guard/admin.guard';
 import { IReqCommentLyrics } from '../../../dto/request/lyrics-request/IReqCommentLyrics';
 import { faker } from '@faker-js/faker';
 import {

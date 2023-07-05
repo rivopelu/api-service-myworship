@@ -38,6 +38,7 @@ import { WebUserService } from './apps/web/web-user/web-user.service';
 import { Comment } from './entities/Comment';
 import { SubComment } from './entities/SubLyricsComment';
 import { LyricsLikes } from './entities/LyricsLikes';
+import { LyricsRepository } from './repositories/lyrics.repository';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { LyricsLikes } from './entities/LyricsLikes';
     WebUserController,
   ],
   providers: [
+    LyricsRepository,
     {
       provide: APP_INTERCEPTOR,
       useClass: DefaultPostInterceptor,
