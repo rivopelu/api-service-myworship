@@ -72,4 +72,16 @@ export class WebLyricsController {
       page: page,
     });
   }
+
+  @Get('/v1/list')
+  getListPaginationLyrics(
+    @Param('slug') slug: string,
+    @Query('size') size: number,
+    @Query('page') page: number,
+  ) {
+    return this.lyricService.getListPaginationLyrics({
+      size: size,
+      page: page,
+    });
+  }
 }
