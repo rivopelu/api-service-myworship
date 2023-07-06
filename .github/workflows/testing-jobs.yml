@@ -4,17 +4,22 @@ on:
   schedule:
     - cron: '* * * * *'
 
+
 jobs:
-  STAGING:
+  unit-tests:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: RUNNING TEST
-        uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: 16.x
-          cache: 'npm'
-          script: |
-            npm i
-            npm run build
-            npm run test
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit tests
+        run: npm run test
