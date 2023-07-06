@@ -17,7 +17,7 @@ import { Categories } from './Categories';
 import { Comment } from './Comment';
 import { LyricsLikes } from './LyricsLikes';
 
-@Entity()
+@Entity({ name: 'lyrics' })
 export class Lyrics {
   @PrimaryGeneratedColumn('increment')
   id: number;

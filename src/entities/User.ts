@@ -10,7 +10,7 @@ import { UserRoleEnum } from '../enum/user-role-enum';
 import { Artist } from './Artist';
 import { LyricsLikes } from './LyricsLikes';
 
-@Entity()
+@Entity({ name: 'user' })
 export class User {
   @PrimaryGeneratedColumn('increment')
   id: number;

@@ -12,7 +12,7 @@ export class AppController {
     return 'PONG';
   }
 
-  @Get('test-email/:mail')
+  @Get('__test__-email/:mail')
   testMail(@Param('mail') email: string) {
     return this.mailService.testingEmail(email).then(() => {
       return email;

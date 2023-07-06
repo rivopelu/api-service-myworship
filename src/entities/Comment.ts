@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { User } from './User';
 import { Lyrics } from './Lyrics';
-import { SubComment } from './SubLyricsComment';
+import { SubComment } from './SubComment';
 
 @Entity({ name: 'comment' })
 export class Comment {

@@ -55,7 +55,12 @@ export function getRandomArtistTest() {
     return array[randomIndex];
   }
 
-  const dataArray = ['unit-test', 'unit-test-2'];
+  const dataArray = [
+    'draft-new',
+    'new-artist-pending-data',
+    'unit-test',
+    'unit-test-2',
+  ];
   return getRandomStringFromArray(dataArray);
 }
 
@@ -108,10 +113,11 @@ export function getRandomLyricsSlugTest() {
 
   const dataArray = [
     'be-with-you',
-    'unit-test-lyrics',
-    'test-unit',
-    'layak-dipuji-disembah',
+    'baru-lirik',
     'baru-lirik-rivo-admin',
+    'test-unit',
+    'adsf',
+    'unit-test-lyrics',
   ];
   return getRandomStringFromArray(dataArray);
 }
