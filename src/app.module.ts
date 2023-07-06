@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { DbConfig } from './config/db-config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { DefaultPostInterceptor } from './config/DefaultPostInterceptor';
@@ -8,6 +8,7 @@ import { ControllerModule } from './modules/controller.module';
 import { ServicesModule } from './modules/services.module';
 import { RepositoriesModule } from './modules/repositories.module';
 import { EntitiesModule } from './modules/entities.module';
+import { LoggerMiddleware } from './config/logger-middleware.service';
 
 @Module({
   imports: [DbConfig, RootJwtModules, EntitiesModule, MailModule],
@@ -21,4 +22,8 @@ import { EntitiesModule } from './modules/entities.module';
     ...ServicesModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

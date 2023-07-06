@@ -35,6 +35,7 @@
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "csv-writer": "^1.6.0",
     "date-fns": "^2.30.0",
     "env-cmd": "^10.1.0",
     "handlebars": "^4.7.7",
@@ -42,7 +43,9 @@
     "nodemailer": "^6.9.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.13"
+    "typeorm": "^0.3.13",
+    "winston": "^3.9.0",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.0",
