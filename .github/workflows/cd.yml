@@ -3,29 +3,23 @@ name: CD
 on:
   push:
     branches: [ development ]
-env:
-  ENV: development
-
 jobs:
-  TEST :
+  STAGING:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js 16
+      - name: RUNNING TEST
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
           cache: 'npm'
-      - run: npm i
-      - run: npm run build
-      - run: npm test
-  CHECK_DIR:
-    runs-on: ubuntu-latest
+          script: |
+            npm i
+            npm run build
+            npm run test
+      
 
-    steps:
-      - name: run a one-line script
-        run: echo RUNNING
-
+      #DEPLOY
       - name: CHECK DIR
         uses: appleboy/ssh-action@master
         with:
@@ -37,11 +31,9 @@ jobs:
             ls
             cd ~/api-service-myworship
             ls
-  DEPLOYMENT:
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Deploying
+      #DEPLOY
+      - name: RUNNING DEPLOY STAGING
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}

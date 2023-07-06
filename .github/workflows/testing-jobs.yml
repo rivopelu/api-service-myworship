@@ -1,0 +1,21 @@
+name: Hourly Unit Tests
+
+on:
+  schedule:
+    - cron: '* * * * *'
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
+          script: |
+            npm i
+            npm run build
+            npm run test

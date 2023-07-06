@@ -1,7 +1,7 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ENV } from '../constants/ENV';
-import BaseService from '../apps/base-service';
+import BaseService from '../services/_base.service';
 
 @Injectable()
 export class MailService extends BaseService {

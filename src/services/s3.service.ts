@@ -10,7 +10,7 @@ import {
 } from '../config/base-response-config';
 import { Media } from '../entities/Media';
 import { ENV } from '../constants/ENV';
-import BaseService from '../apps/base-service';
+import BaseService from './_base.service';
 
 @Injectable()
 export class S3Service extends BaseService {

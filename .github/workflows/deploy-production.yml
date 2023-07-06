@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  TEST :
+  PRODUCTION:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -14,15 +14,11 @@ jobs:
         with:
           node-version: 16.x
           cache: 'npm'
-      - run: npm i
-      - run: npm run build
-      - run: npm test
-  CHECK_DIR:
-    runs-on: ubuntu-latest
+          script: |
+            npm i
+            npm run build
+            npm run test
 
-    steps:
-      - name: run a one-line script
-        run: echo RUNNING
 
       - name: CHECK DIR
         uses: appleboy/ssh-action@master
@@ -35,11 +31,9 @@ jobs:
             ls
             cd ~/app-production
             ls
-  DEPLOYMENT:
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Deploying
+      #          DEPLOY PRODUCTION
+      - name: DEPLOY PRODUCTION
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_PRODUCTION }}

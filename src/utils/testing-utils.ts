@@ -55,7 +55,12 @@ export function getRandomArtistTest() {
     return array[randomIndex];
   }
 
-  const dataArray = ['unit-test', 'unit-test-2'];
+  const dataArray = [
+    'draft-new',
+    'new-artist-pending-data',
+    'unit-test',
+    'unit-test-2',
+  ];
   return getRandomStringFromArray(dataArray);
 }
 
@@ -97,6 +102,33 @@ export function getRandomYoutubeUrl() {
     'https://www.youtube.com/watch?v=e-ORhEE9VVg&list=RDVQo4hyWfBQ4&index=8',
     'https://www.youtube.com/watch?v=Z7yNvMzz2zg&list=RDVQo4hyWfBQ4&index=19',
   ];
+  return getRandomStringFromArray(dataArray);
+}
+
+export function getRandomLyricsSlugTest() {
+  function getRandomStringFromArray(array: string[]): string {
+    const randomIndex = Math.floor(Math.random() * array.length);
+    return array[randomIndex];
+  }
+
+  const dataArray = [
+    'be-with-you',
+    'baru-lirik',
+    'baru-lirik-rivo-admin',
+    'test-unit',
+    'adsf',
+    'unit-test-lyrics',
+  ];
+  return getRandomStringFromArray(dataArray);
+}
+
+export function getRandomCommentId() {
+  function getRandomStringFromArray(array: number[]): number {
+    const randomIndex = Math.floor(Math.random() * array.length);
+    return array[randomIndex];
+  }
+
+  const dataArray = [72, 74, 73, 57, 8, 3, 19, 39, 40, 82, 83, 85, 86];
   return getRandomStringFromArray(dataArray);
 }
 

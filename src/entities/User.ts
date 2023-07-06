@@ -8,8 +8,9 @@ import {
 } from 'typeorm';
 import { UserRoleEnum } from '../enum/user-role-enum';
 import { Artist } from './Artist';
+import { LyricsLikes } from './LyricsLikes';
 
-@Entity()
+@Entity({ name: 'user' })
 export class User {
   @PrimaryGeneratedColumn('increment')
   id: number;
@@ -31,10 +32,14 @@ export class User {
   role: UserRoleEnum;
   @Column({ nullable: true })
   image: string;
+  @Column({ nullable: true, type: 'text', name: 'phone_number' })
+  phoneNumber: string;
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
   @OneToMany(() => Artist, (artist) => artist.created_by)
   artist_created: Artist[];
+  @OneToMany(() => LyricsLikes, (like) => like.user)
+  lyrics_like: LyricsLikes[];
 }
