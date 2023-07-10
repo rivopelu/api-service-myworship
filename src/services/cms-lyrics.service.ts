@@ -223,7 +223,12 @@ export class CmsLyricsService extends BaseService {
     });
 
     const data = await this.lyricsRepository.findListLyricCmsAndCount(
-      param,
+      {
+        categories: param.categories,
+        page: this.paginationPage,
+        search: param.search,
+        size: this.paginationSize,
+      },
       this.textHelper.checkStatus(status),
     );
 
