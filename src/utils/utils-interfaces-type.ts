@@ -5,10 +5,11 @@ export interface ILabelValue<T> {
   value: T;
 }
 
-export interface IPaginationQueryParams {
+export interface IReqQueryParams {
   size?: number;
   page?: number;
   search?: string;
+  categories?: string;
 }
 
 export interface setDataPageable {

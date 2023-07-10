@@ -10,7 +10,6 @@ import BaseService from './_base.service';
 
 import { UtilsHelper } from '../helper/utils-helper';
 import { DateHelper } from '../helper/date-helper';
-import { Lyrics } from '../entities/Lyrics';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Like, Not, Repository } from 'typeorm';
 import { Artist } from '../entities/Artist';
@@ -19,17 +18,21 @@ import { Categories } from '../entities/Categories';
 import { REQUEST } from '@nestjs/core';
 import {
   IGenerateJwtData,
-  IPaginationQueryParams,
+  IReqQueryParams,
 } from '../utils/utils-interfaces-type';
 import { IDetailLyricResponse } from '../dto/response/lyric-response/IDetailLyricResponse';
 import { ICreateLyricsDto } from '../dto/request/lyrics-request/ICreateLyricsDto';
 import { ReturnResponsePagination } from '../config/base-response-config';
-import { IResListLyric } from '../dto/response/lyric-response/IResListLyric';
+import {
+  IResListLyric,
+  IResListLyricV2,
+} from '../dto/response/lyric-response/IResListLyric';
 import { StatusEnum } from '../enum/status-enum';
 import { parseTypeStatusToEnum, statusType } from '../utils/status-type';
 import { UserRoleEnum } from '../enum/user-role-enum';
 import { IReqRejectRevisionLyric } from '../dto/request/lyrics-request/IReqRejectRevisionLyric';
 import { TextHelper } from '../helper/text-helper';
+import { LyricsRepository } from '../repositories/lyrics.repository';
 
 @Injectable()
 export class CmsLyricsService extends BaseService {
@@ -38,8 +41,7 @@ export class CmsLyricsService extends BaseService {
   private dateHelper = new DateHelper();
 
   constructor(
-    @InjectRepository(Lyrics)
-    private lyricsRepository: Repository<Lyrics>,
+    private lyricsRepository: LyricsRepository,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(Artist)
@@ -146,7 +148,7 @@ export class CmsLyricsService extends BaseService {
 
   async getListAll(
     status: statusType,
-    param: IPaginationQueryParams,
+    param: IReqQueryParams,
   ): ReturnResponsePagination<IResListLyric[]> {
     this.setPaginationData({
       search: param.search,
@@ -188,6 +190,61 @@ export class CmsLyricsService extends BaseService {
           publish_by: item?.approved_by?.name,
           created_by: item?.created_by?.name,
           id: item.id,
+        };
+      });
+      return this.baseResponse.baseResponsePageable(listDataRes, {
+        size: this.paginationSize,
+        page: this.paginationPage,
+        total_data: count,
+      });
+    }
+  }
+
+  public async getListAllV2(
+    status: statusType,
+    param: IReqQueryParams,
+  ): ReturnResponsePagination<IResListLyricV2[]> {
+    this.setPaginationData({
+      search: param.search,
+      page: param.page,
+      size: param.size,
+    });
+    const user: IGenerateJwtData = this.req['user'];
+    const count = await this.lyricsRepository.count({
+      where: {
+        status:
+          status === 'all' && user.role === UserRoleEnum.SUPER_ADMIN
+            ? Not(StatusEnum.DRAFT)
+            : parseTypeStatusToEnum(status),
+        created_by:
+          user.role === UserRoleEnum.ADMIN ? { id: user.id } : undefined,
+        title: param?.search ? Like(`%${param.search}%`) : undefined,
+      },
+    });
+
+    const data = await this.lyricsRepository.findListLyricCmsAndCount(
+      param,
+      this.textHelper.checkStatus(status),
+    );
+
+    if (data) {
+      const listDataRes: IResListLyricV2[] = data.map((item) => {
+        return {
+          title: item.title,
+          slug: item.slug,
+          artist_name: item.artist_name,
+          artist_slug: item.artist_slug,
+          image: item?.image ? item.image : null,
+          status_enum: item.status_enum,
+          status_string: this.textHelper.toLowercaseEnum(item.status_enum),
+          created_at: this.dateHelper.parseToUtc(item.created_at),
+          publish_by: item?.publish_by,
+          created_by: item?.created_by,
+          id: item.id,
+          total_comment: parseInt(item.total_comment.toString()),
+          total_like: parseInt(item.total_like.toString()),
+          total_view: parseInt(item.total_view.toString()),
+          publish_at: this.dateHelper.parseToUtc(item.publish_at),
         };
       });
       return this.baseResponse.baseResponsePageable(listDataRes, {

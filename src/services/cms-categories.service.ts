@@ -11,7 +11,7 @@ import BaseService from './_base.service';
 import { UtilsHelper } from '../helper/utils-helper';
 import { Categories } from '../entities/Categories';
 import { ICreateCategoryDto } from '../dto/request/categories-request/ICreateCategoryDto';
-import { IPaginationQueryParams } from '../utils/utils-interfaces-type';
+import { IReqQueryParams } from '../utils/utils-interfaces-type';
 import { ReturnBaseResponse } from '../config/base-response-config';
 import { IListCategoriesResponse } from '../dto/response/categories-response/IListCategoriesResponse';
 
@@ -81,7 +81,7 @@ export class CmsCategoriesService extends BaseService {
   }
 
   async getListCategories(
-    param: IPaginationQueryParams,
+    param: IReqQueryParams,
   ): ReturnBaseResponse<IListCategoriesResponse[]> {
     const data = await this.categoriesRepository.find({
       where: {

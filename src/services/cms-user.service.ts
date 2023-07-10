@@ -11,7 +11,7 @@ import {
 } from '../config/base-response-config';
 import {
   IGenerateJwtData,
-  IPaginationQueryParams,
+  IReqQueryParams,
 } from '../utils/utils-interfaces-type';
 import { parseTypeRoleToEnum, roleUserType } from '../utils/status-type';
 import { IResGetListUser } from '../dto/response/user-response/IResGetListUser';
@@ -62,7 +62,7 @@ export class CmsUserService extends BaseService {
 
   async getLisUser(
     role: roleUserType,
-    param?: IPaginationQueryParams,
+    param?: IReqQueryParams,
   ): ReturnResponsePagination<IResGetListUser[]> {
     this.setPaginationData({
       page: param.page,
