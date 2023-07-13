@@ -4,8 +4,8 @@ import ILoginDto from '../dto/request/auth-request/ILoginDto';
 
 export async function loginCmsTest(app: INestApplication): Promise<string> {
   const data: ILoginDto = {
-    email: 'super_admin@gmail.com',
-    password: 'super_admin',
+    email: 'admin@gmail.com',
+    password: 'admin',
   };
   const loginUrl = '/cms/auth/v1/login';
   const response = await request(app.getHttpServer()).post(loginUrl).send(data);
