@@ -41,6 +41,23 @@ export class CmsLyricsController {
     return this.lyricsService.getListAll(status, { size, page, search });
   }
 
+  @UseGuards(AdminGuard)
+  @Get('v2/list/:status')
+  getListAllV2(
+    @Query('size') size: number,
+    @Query('page') page: number,
+    @Query('search') search: string,
+    @Query('categories') categories: string,
+    @Param('status') status: statusType,
+  ) {
+    return this.lyricsService.getListAllV2(status, {
+      size,
+      page,
+      search,
+      categories,
+    });
+  }
+
   // POST CONTROLLER
 
   @UseGuards(AdminGuard)

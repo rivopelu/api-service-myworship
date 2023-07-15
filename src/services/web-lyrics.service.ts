@@ -5,14 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import BaseService from './_base.service';
-
-import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Like } from 'typeorm';
 import { IResSearchLyric } from '../dto/response/lyric-response/IResSearchLyric';
 import { StatusEnum } from '../enum/status-enum';
 import { IResDetailLyricWeb } from '../dto/response/lyric-response/IResDetailLyricWeb';
 import { DateHelper } from '../helper/date-helper';
-import { IPaginationQueryParams } from '../utils/utils-interfaces-type';
+import { IReqQueryParams } from '../utils/utils-interfaces-type';
 import { IResLyricPaginationByArtistWeb } from '../dto/response/lyric-response/IResLyricPaginationByArtistWeb';
 import { ReturnResponsePagination } from '../config/base-response-config';
 import { IReqCommentLyrics } from '../dto/request/lyrics-request/IReqCommentLyrics';
@@ -23,7 +21,6 @@ import {
   IResCommentData,
   IResCommentLyrics,
 } from '../dto/response/lyric-response/IResCommentLyrics';
-import { SubComment } from '../entities/SubComment';
 import { LyricsLikes } from '../entities/LyricsLikes';
 import { IResListLyricsWebGeneral } from '../dto/response/lyric-response/IResListLyricsWebGeneral';
 import { IResListLyricsInDetailLyrics } from '../dto/response/lyric-response/IResListLyricsInDetailLyrics';
@@ -191,7 +188,7 @@ export class WebLyricsService extends BaseService {
 
   public async getListPaginationByArtistSlug(
     artistSlug: string,
-    param: IPaginationQueryParams,
+    param: IReqQueryParams,
   ): ReturnResponsePagination<IResLyricPaginationByArtistWeb[]> {
     this.setPaginationData({
       page: param.page,
@@ -470,5 +467,39 @@ export class WebLyricsService extends BaseService {
         resData,
       );
     }
+  }
+
+  async getListPaginationLyrics(
+    param: IReqQueryParams,
+  ): ReturnResponsePagination<IResListLyricsWebGeneral[]> {
+    this.setPaginationData({
+      page: param.page,
+      size: param.size,
+    });
+    const getCountAllLyric = await this.lyricsRepository.count({
+      where: {
+        status: StatusEnum.PUBLISH,
+      },
+    });
+    const data = await this.lyricsRepository.findListLyricsPagination({
+      page: this.paginationPage,
+      size: this.paginationSize,
+    });
+    const resData: IResListLyricsWebGeneral[] = data.map((item) => {
+      return {
+        ...item,
+        total_view: parseInt(item.total_view.toString()),
+        total_like: parseInt(item.total_like.toString()),
+        total_comment: parseInt(item.total_comment.toString()),
+      };
+    });
+    return this.baseResponse.baseResponsePageable<IResListLyricsWebGeneral[]>(
+      resData,
+      {
+        size: this.paginationSize,
+        total_data: getCountAllLyric,
+        page: this.paginationPage,
+      },
+    );
   }
 }

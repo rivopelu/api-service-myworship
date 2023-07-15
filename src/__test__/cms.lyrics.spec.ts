@@ -169,6 +169,7 @@ describe('CMS LYRIC TEST', () => {
       }
     }
   });
+
   it('should create and need revision', async function () {
     const data: ICreateLyricsDto = {
       youtube_url: getRandomYoutubeUrl(),

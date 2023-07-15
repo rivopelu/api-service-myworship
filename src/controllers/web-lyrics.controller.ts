@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Logger,
   Param,
   Patch,
   Post,
@@ -17,7 +18,11 @@ import { IReqAddSubLyricComment } from '../dto/request/lyrics-request/IReqAddSub
 @ApiTags('WEB LYRICS CONTROLLER')
 @Controller('web/lyrics')
 export class WebLyricsController {
-  constructor(private lyricService: WebLyricsService) {}
+  private readonly logger: Logger;
+
+  constructor(private lyricService: WebLyricsService) {
+    this.logger = new Logger('YourController');
+  }
 
   @UseGuards(UserGuard)
   @Post('/v1/add-comment')
@@ -38,6 +43,8 @@ export class WebLyricsController {
 
   @Get('v1/detail/:slug')
   getDetailLyricWebBySlug(@Param('slug') slug: string) {
+    this.logger.log('API request received');
+
     return this.lyricService.getDetailLyricBySlugWeb(slug);
   }
   @Get('v1/detail/:slug/list')
@@ -68,6 +75,18 @@ export class WebLyricsController {
     @Query('page') page: number,
   ) {
     return this.lyricService.getListPaginationByArtistSlug(slug, {
+      size: size,
+      page: page,
+    });
+  }
+
+  @Get('/v1/list')
+  getListPaginationLyrics(
+    @Param('slug') slug: string,
+    @Query('size') size: number,
+    @Query('page') page: number,
+  ) {
+    return this.lyricService.getListPaginationLyrics({
       size: size,
       page: page,
     });

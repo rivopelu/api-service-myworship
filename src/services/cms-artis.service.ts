@@ -19,7 +19,7 @@ import {
 } from '../config/base-response-config';
 import {
   IGenerateJwtData,
-  IPaginationQueryParams,
+  IReqQueryParams,
 } from '../utils/utils-interfaces-type';
 import { IResListArtistSelect } from '../dto/response/artist-response/IResListArtistSelect';
 import { StatusEnum } from '../enum/status-enum';
@@ -137,7 +137,7 @@ export class CmsArtisService extends BaseService {
 
   async getListArtistAll(
     status: statusType,
-    param?: IPaginationQueryParams,
+    param?: IReqQueryParams,
   ): ReturnResponsePagination<IListArtistResponse[]> {
     this.setPaginationData({
       page: param.page,
@@ -186,7 +186,7 @@ export class CmsArtisService extends BaseService {
   }
 
   async getListArtistDraftUser(
-    param?: IPaginationQueryParams,
+    param?: IReqQueryParams,
   ): ReturnResponsePagination<IListArtistResponse[]> {
     this.setPaginationData({
       page: param.page,
@@ -314,7 +314,7 @@ export class CmsArtisService extends BaseService {
   }
 
   async getListArtistNeedRevision(
-    param: IPaginationQueryParams,
+    param: IReqQueryParams,
   ): ReturnResponsePagination<IListArtistResponse[]> {
     const user: IGenerateJwtData = this.req['user'];
     this.setPaginationData({
